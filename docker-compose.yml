@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+    biblioteca_uts:
+        build: .
+        image: biblioteca_uts:v1.0
+        container_name: biblioteca-uts
+        restart: always
+        # env_file:
+        #     - .env
+        command: python manage.py runserver --insecure 0.0.0.0:8080
+        volumes:
+            - .:/code
+        ports:
+            - 8080:8080
+volumes:
+    .:

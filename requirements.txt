@@ -1,0 +1,5 @@
+Django==3.2
+django-environ==0.4.5
+uWSGI>=2.0.19.1,<2.1
+Pillow>=9.0.0,<10.0.0
+djangorestframework==3.13.1
