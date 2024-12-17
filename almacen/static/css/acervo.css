@@ -1,0 +1,55 @@
+#acervo {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#acervo #acervo_add .modal-content #btnModalSend {
+    background-color: #0a3d62;
+    color: white;
+}
+
+#acervo #contentTitle {
+    color: white;
+    background-color: #0a3d62;
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+#acervo #btnPlusBook {
+    background-color: #3c6382;
+    color: white;
+    align-items: center;
+}
+
+#acervo .table-responsive {
+    border-radius: 0 0 10px 10px;
+}
+
+
+table.dataTable.stripe>tbody>tr:nth-child(odd)>*,
+table.dataTable.display>tbody>tr:nth-child(odd)>* {
+    box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0.131) !important;
+    box-shadow: inset 0 0 0 9999px rgba(var(--dt-row-stripe), 0.023);
+}
+
+table.dataTable.stripe>tbody>tr:nth-child(odd).selected>*,
+table.dataTable.display>tbody>tr:nth-child(odd).selected>* {
+    box-shadow: inset 0 0 0 9999px rgba(13, 110, 253, 0.923);
+    box-shadow: inset 0 0 0 9999px rgba(var(--dt-row-selected), 0.923);
+}
+
+.card-info:not(.card-outline)>.card-header {
+    background-color: #3c6382 !important;
+}
+
+#acervo_add #tbl_addBook #btnModalSend,
+#btnModalUpdate {
+    background-color: #0a3d62 !important;
+    color: white;
+}
+
+table.dataTable td {
+    font-size: 0.9rem;
+}

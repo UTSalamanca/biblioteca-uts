@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}PDF preview{% endblock %}
+{% block content %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/estadias.css' %}">
+{% endblock %}
+<!-- Content Header (Page header) -->
+<!--div id="proyectos_preview" oncopy="alert('¡Copiado prohibido!');return false"-->
+<div id="proyectos_preview" oncopy="notCopy();return false">
+    <section class="content-header mt-5">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Reporte</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'inicio' %}"><i class="fas fa-home"
+                                    style="color: black;"></i></a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'proyectos' %}" style="color: black;">Proyectos de
+                                estadías</a>
+                        </li>
+                        <li class="breadcrumb-item text-info">Reporte</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <div id="iframe_card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row ml-3 aling-items-center">
+                    <div class="col-xl-5">
+                        <h5><strong>Alumno:</strong> {{ alumno.alumno }}</h5>
+                    </div>
+                    <div class="col-xl-2">
+                        <h5><strong>Carrera:</strong> {{ alumno.carrera }}</h5>
+                    </div>
+                    <div class="col-xl-5">
+                        <h5><strong>Nombre del proyecto:</strong> {{ alumno.proyecto }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mx-4" id="pdfContainer">
+            <div id="pdfViewer" data-url_reporte="{{ reporte }}"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script src="{% static 'js/estadias.js' %}"></script>
+<!-- script src="{% static 'js/close_page.js' %}"></script -->
+{% endblock %}
