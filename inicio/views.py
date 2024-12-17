@@ -28,7 +28,7 @@ def index_inicio(request):
         # Se realiza el recopilado del tipo de adquisición
         value_adqui = get_adqui(datos)
         """ Registro de vista"""
-        ctrl_info = register_view.objects.all()
+        ctrl_info = register_view.objects.order_by('-fecha_consulta')
         ctrl_view = ctrl_view_report(ctrl_info)
         """ fin """
 
