@@ -39,7 +39,6 @@
               <th class="text-center">Edición</th>
               <th class="text-center">Formato</th>
               <th class="text-center">En existencia</th>
-              <th class="text-center">Colocación</th>
               <th class="text-center">Solicitar</th>
             </tr>
           </thead>
@@ -57,11 +56,10 @@
               {% else %}
               <td>{{p.cant}}</td>
               {% endif %}
-              <td>{{p.colocacion}}</td>
               <td class="text-center">
                 <a type="button" id="btnPedidoBook" class="btn float-center" data-bs-toggle="modal"
                   data-bs-target="#modal_catalogo" data-bs-placement="top"
-                  title="Realizar prestamo"><i class="fas fa-book ml-1"></i>
+                  title="Realizar préstamo"><i class="fas fa-book ml-1"></i>
                 </a>
               </td>
             </tr>

@@ -72,7 +72,7 @@ $('#prestamoTable').on('click', 'tbody td a#renew_again', function (e) {
     let cantidad_i = data['cantidad_i'];
     // let entrega = data['entrega'].trim().toLowerCase();
     let entrega = data['entrega'];
-    let title = "¿Renovar prestamo?";
+    let title = "¿Renovar préstamo?";
     let btn = "Renovar";
     // Validar si es posible eliminar
     let btn_color = "#28a745"; // Botón renovar
