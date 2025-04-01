@@ -12,6 +12,14 @@ from static.helpers import *
 
 # Create your views here.
 def catalago(request):
+    """Función principal para mostrar la información en el index
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        array: Arreglo con la información filtrada del catalogos
+    """
     data_prestamo = 'Interno: Préstamos dentro de la universidad. Externo: Préstamos fuera de la universidad, con 6 días permitidos como límite.'
     form = catalogo_form()
     side_code = 400
@@ -19,8 +27,16 @@ def catalago(request):
     return render(request, 'index_catalogo.html', {"side_code": side_code, "listado":listado, "form":form, "data_prestamo": data_prestamo})
 
 # Genera la vista para la tabla de prestamos
-# @groups_required('Administrador')
+@groups_required('Administrador')
 def prestamos_View(request):
+    """Función para el recopialdo de la información para los dashboard y tablas de inicio
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        array: Arreglo con la información formateada
+    """
     side_code = 401
     listado = model_catalogo.objects.all()
 
@@ -67,6 +83,14 @@ def prestamos_View(request):
 
 # obtiene datos de la persona por medio de su matricula o cve
 def get_alumno(request):
+    """Función para obtener la información especifica del alumno con respecto de la matricula
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        array: Arreglo con la información filtrada del alumno
+    """
     matricula = request.GET.get('matricula')
     if matricula:
         cve_persona = ''
@@ -107,6 +131,15 @@ def get_alumno(request):
 
 # Genera clave unica para prestamo
 def create_cve(fullname, colocacion):
+    """Función para la creación de la clave (cve) única para el registro en las tablas
+
+    Args:
+        fullname (string): Nombre completo
+        colocacion (string): Colocación
+
+    Returns:
+        string: Clave creada
+    """
     cont = 1
     iniciales = ''
     coloca = ''
@@ -133,6 +166,14 @@ def create_cve(fullname, colocacion):
 
 # Función registra prestamos
 def prestamo_registro(request):
+    """Función para el registro en base de datos de los ejemplares prestados.
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        Void
+    """
     try:
         if request.method == 'POST':
             form = catalogo_form(request.POST)
@@ -208,6 +249,14 @@ def prestamo_registro(request):
 
 # Función para convertir documento a base64
 def convert_base64(img):
+    """Función para la conversión de una imagen en base64
+
+    Args:
+        img (object): Objeto de la imagen
+
+    Returns:
+        objeto: Objeto de la imagen convertida
+    """
     try:
         imagen_base64 = base64.b64encode(img.read()).decode('utf-8')
         return imagen_base64
@@ -218,6 +267,15 @@ def convert_base64(img):
 
 # Función para convertir de base64 a imagen y presentarla
 def view_book(request, base64):
+    """Función para la creación del archivo de base64 a pdf
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+        base64 (string): Bade64 de archivo a consultar
+
+    Returns:
+        Void
+    """
     try:
         # Se obtienen los datos entrantes
         colocacion = request.GET.get('colocacion')
@@ -236,14 +294,30 @@ def view_book(request, base64):
         return redirect('catalago')
 
 # Carga la vista con la información del acervo
-# @groups_required('Administrador')
+@groups_required('Administrador')
 def cargar_portada(request):
+    """Muestra la información de catalogos
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        array: Información filtrada
+    """
     side_code = 402
     form = catalogo_form()
     return render(request, 'cargar_portada.html', {"form":form, "side_code": side_code})
 
 # Función que realiza la edición del elemento con la imagen de portada
 def edit_portada(request):
+    """Función para realizar la actualización de portada
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        Void
+    """
     if request.method == 'POST':
         data = {}
         cont = 1
@@ -285,6 +359,14 @@ def edit_portada(request):
 
 # Se buscan lo libro por colocación
 def search_book(request):
+    """Realiza la busqueda de ejemplares
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        array: Información filtrada del ejemplar
+    """
     get_colocacion = request.GET.get('colocacion')
     if get_colocacion:
         try:
@@ -314,6 +396,16 @@ def search_book(request):
 
 # Cambia el estado de la entrega de los libros
 def book_delivered(request, cve, entrega):
+    """Cambia el estado de entrega de los ejemplares
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+        cve (string): Clave del prestamos
+        entrega (string): Estado actual del prestamos
+
+    Returns:
+        Void
+    """
     try:
         book = model_catalogo.objects.filter(cve_prestamo=cve).first()
         if book:
@@ -350,6 +442,14 @@ def book_delivered(request, cve, entrega):
 
 # Vista, retorna todos los libros solicitados por el usuario
 def prestamos_usuario(request):
+    """Revuelve todos los libros solicitados por el usuario
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        array: Información filtrada del ejemplar
+    """
     side_code = 403
     try:
         ref_matricula = str(request.user)
@@ -401,6 +501,17 @@ def prestamos_usuario(request):
 
 # Cambia el estado de la entrega de los libros
 def renew_again(request, cve, cant, entrega):
+    """Manejo de la opción renovar prestamos
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+        cve (string): Clave del prestamo
+        cant (integer): Cantidad de ejemplares para solicitar de nuevo
+        entrega (string): Estado del prestamo
+
+    Returns:
+        Void
+    """
     try:
         book = model_catalogo.objects.filter(cve_prestamo=cve).first()
         if book:
@@ -459,6 +570,14 @@ def renew_again(request, cve, cant, entrega):
 
 # Llega petición ajax, busqueda de cantidad por titulo y colocación
 def cant_for_search(request):
+    """Busca ejemplar en el acervo
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        array: Información filtrada de la cantidad de ejemplares
+    """
     try:
         get_titulo = request.GET['titulo']
         get_colocacion = request.GET['colocacion']
