@@ -19,6 +19,7 @@ class acervo_model(models.Model):
     class Format(models.TextChoices):
         LIBRO = 'Libro', _('Libro')
         DISCO = 'Disco', _('Disco')
+        REVISTA = 'Revista', _('Revista')
 
     titulo = models.CharField(max_length=100,verbose_name="titulo", null=True, blank=True)
     autor = models.CharField(max_length=100,verbose_name="Autor", null=True, blank=True)
@@ -29,7 +30,7 @@ class acervo_model(models.Model):
     anio = models.CharField(max_length=20,verbose_name="Año de edición", null=True, blank=True)
     adqui = models.CharField(max_length=20,verbose_name="Tipo de adquisición", null=True, blank=True)
     estado = models.CharField(max_length=10, verbose_name="Estado", choices=State.choices, default=State.EXCELENTE, null=True, blank=True)
-    formato = models.CharField(max_length=6, verbose_name="formato", choices=Format.choices, default=Format.LIBRO, null=True, blank=True)
+    formato = models.CharField(max_length=7, verbose_name="formato", choices=Format.choices, default=Format.LIBRO, null=True, blank=True)
     base64 = LongTextField('Portada',null=True,blank=True)
     fecharegistro = models.DateField(verbose_name="Fecha de Registro", null=True, blank=True)
     fechaedicion = models.DateField(verbose_name="Fecha de actualización", null=True, blank=True)

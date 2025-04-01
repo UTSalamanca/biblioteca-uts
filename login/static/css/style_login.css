@@ -5,19 +5,15 @@ body {
     background-size: cover;
 }
 
-.container {
-    max-width: 100%;
-}
-
-#contenedor .card {
-    background-color: #e2e2e2;
-    max-width: 30%;
-}
-
 #logoImgUts {
     max-width: 50%;
 }
 
+#tarjeta {
+    max-width: 30%;
+    margin-top: 10rem;
+    margin-bottom: 10rem;
+}
 
 p {
     font-size: 14px;

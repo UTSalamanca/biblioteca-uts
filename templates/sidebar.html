@@ -9,33 +9,18 @@
             style="opacity: .8">
         <span class="brand-text font-weight-light">BibliotecaDigital</span>
     </a>
+    
+    <div class="brand-link d-flex">
+        <i class="fas fa-user brand-image align-content-center" style="opacity: .8"></i>
+        <span class="brand-text font-weight-light">{{ user }}</span>
+    </div>
+    <div class="brand-link d-flex">
+        <i class="fab fa-readme brand-image align-content-center" style="opacity: .8"></i>
+        <span class="brand-text font-weight-light" style="font-size: 1rem;">"Un lector vive mil vidas <br> antes de morir"</span>
+    </div>
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <!-- Sidebar user (optional) -->
-        <div class="user-panel py-2">
-            <!--div class=" image">
-            <img src="{% static 'img/iconoUser.png' %}" class="img-circle elevation-2" alt="User Image">
-            </div-->
-            <ul class="text-white ml-0 pl-0 text-bold text-center" style=" list-style: none;">
-                <li>
-                    <div class="row d-flex flex-column justify-content-center align-items-center">
-                        <div class="col-xl-12">
-                            <i class="fas fa-user brand-image elevation-3" style="opacity: .8"></i>
-                            <span class="brand-text font-weight-light">{{ user }}</span>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="row d-flex flex-column justify-content-center align-items-center">
-                        <div class="col-xl-12">
-                            <i class="fab fa-readme brand-image elevation-3" style="opacity: .8"></i>
-                            <span class="brand-text font-weight-light">"Un lector vive mil vidas <br> antes de morir"</span>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
@@ -85,22 +70,22 @@
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
                                 {% if side_code == 400 %}
-                                <a href="{% url 'catalago_View' %}" class="nav-link active">
+                                <a href="{% url 'catalago' %}" class="nav-link active">
                                     {% else %}
-                                    <a href="{% url 'catalago_View' %}" class="nav-link">
+                                    <a href="{% url 'catalago' %}" class="nav-link">
                                         {% endif %}
-                                        <i class="fas fa-book"></i>
-                                        <p>Catalogo</p>
+                                        <i class="nav-icon fas fa-book"></i>
+                                        <p>Catálogo</p>
                                     </a>
                             </li>
                             <li class="nav-item">
                                 {% if side_code == 403 %}
-                                <a href="{% url 'get_book_for_person' %}" class="nav-link active">
+                                <a href="{% url 'prestamos_usuario' %}" class="nav-link active">
                                     {% else %}
-                                    <a href="{% url 'get_book_for_person' %}" class="nav-link">
+                                    <a href="{% url 'prestamos_usuario' %}" class="nav-link">
                                         {% endif %}
-                                        <i class="fas fa-list-ul"></i>
-                                        <p>Libros pedidos</p>
+                                        <i class="nav-icon fas fa-list-ul"></i>
+                                        <p>Préstamos solicitados</p>
                                     </a>
                             </li>
                             {% if 'Administrador' in grupo_control %}
@@ -110,8 +95,8 @@
                                     {% else %}
                                     <a href="{% url 'prestamos_View' %}" class="nav-link">
                                         {% endif %}
-                                        <i class="fas fa-clipboard-list"></i>
-                                        <p>Registro de prestamos</p>
+                                        <i class="nav-icon fas fa-clipboard-list"></i>
+                                        <p>Registro de préstamos</p>
                                     </a>
                             </li>
                             <li class="nav-item">
@@ -120,7 +105,7 @@
                                     {% else %}
                                     <a href="{% url 'cargar_portada' %}" class="nav-link">
                                         {% endif %}
-                                        <i class="fas fa-file-upload"></i>
+                                        <i class="nav-icon fas fa-file-upload"></i>
                                         <p>Cargar portada</p>
                                     </a>
                             </li>
@@ -134,7 +119,7 @@
                         {% else %}
                         <a href="#" class="nav-link">
                             {% endif %}
-                            <i class="fas fa-boxes"></i>
+                            <i class="nav-icon fas fa-boxes"></i>
                             <p>
                                 Estadías
                                 <i class="right fas fa-angle-left"></i>
@@ -147,7 +132,7 @@
                                     {% else %}
                                     <a href="{% url 'proyectos' %}" class="nav-link">
                                         {% endif %}
-                                        <i class="fas fa-file-alt"></i>
+                                        <i class="nav-icon fas fa-file-alt"></i>
                                         <p>Proyectos</p>
                                     </a>
                             </li>

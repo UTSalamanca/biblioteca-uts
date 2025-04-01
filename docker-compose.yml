@@ -3,7 +3,7 @@ services:
         logging:
             driver: "json-file"
             options:
-                max-size: "50m"
+                max-size: "10m"
         build: .
         image: biblioteca_uts:v1.0
         container_name: biblioteca-uts

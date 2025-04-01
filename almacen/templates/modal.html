@@ -1,7 +1,7 @@
 {% load static %}
 <!-- Modal de registro de libros -->
 <div class="modal fade" id="acervo_add" data-bs-backdrop="static" tabindex="-1" data-bs-keyboard="false">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
             <div class="modal-body">
                 <div class="card card-info">
@@ -108,8 +108,9 @@
                             </div>
                             <button type="submit" class="btn float-right ml-1" id="btnModalSend">Agregar</button>
                             <button type="submit" class="btn float-right ml-1" id="btnModalUpdate"
-                                style="display: none;">Guardar
-                                cambios</button>
+                                style="display: none;">Guardar cambios</button>
+                            <button type="button" class="btn btn-danger float-right ml-1"
+                                    id="btnModalDelete" style="display: none;">Eliminar registro</button>
                             <button type="button" class="btn btn-default float-right"
                                 data-bs-dismiss="modal">Cancelar</button>
                         </form>
@@ -121,7 +122,7 @@
 </div>
 
 <div class="modal fade" id="more_info_modal">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
             <div class="modal-header" style="background-color: #3c6382; color: white;">
                 <h4 class="modal-title">Más información</h4>

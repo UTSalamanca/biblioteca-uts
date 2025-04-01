@@ -1,5 +1,5 @@
 // Llama función para DataTable
-datatable('ProyectosTable');
+datatable('ProyectosTable', 0);
 
 let response
 response = $('#response_sweetalert').data('resp')

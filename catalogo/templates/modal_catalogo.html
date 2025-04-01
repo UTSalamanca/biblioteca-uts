@@ -1,7 +1,7 @@
 {% load static %}
 <!-- Modal de registro de proyectos de estadías-->
 <div class="modal fade" id="modal_catalogo" data-bs-backdrop="static" data-bs-keyboard="false">
-  <div class="modal-dialog modal-xl">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="btn-close mr-2" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -9,7 +9,7 @@
       <div class="modal-body">
         <div class="card card-info">
           <div class="card-header">
-            <h3 class="card-title">Solicitud de prestamo</h3>
+            <h3 class="card-title">Solicitud de préstamo</h3>
           </div>
             <div class="card-body">
                 <form action="/prestamo_registro/" method="POST" id="tbl_registroP">
@@ -79,7 +79,7 @@
                               {{ form.nom_alumno }}
                             </div>
                           </div>
-                          <span class="text-bold">Datos del prestamo</span>
+                          <span class="text-bold">Datos del préstamo</span>
                           <div class="border-top">
                             <div class="row">
                               <div class="col-xl-6">
@@ -92,7 +92,7 @@
                                 </div>
                               </div>
                               <div class="col-xl-6">
-                                <label class="text-muted" for="formato">Tipo de Prestamo 
+                                <label class="text-muted" for="formato">Tipo de Préstamo 
                                   <i class="fas fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top"
                                     title="{{data_prestamo}}">
                                   </i>
@@ -116,7 +116,7 @@
                         </div>
                     </div>
                     <button type="submit" id="btnSendEstadias" class="btn float-right ml-1"
-                        style="background-color: #0a3d62; color: white">Solicitar prestamo</button>
+                        style="background-color: #0a3d62; color: white">Solicitar préstamo</button>
                     <button type="button" class="btn btn-default float-right" data-bs-dismiss="modal"
                         id="close_modal_estadia">Cancelar</button>
                 </form>

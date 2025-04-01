@@ -20,37 +20,39 @@
     </head>
 
     <body>
-        <div class="container">
-            <div id="contenedor" class="m-5 d-flex justify-content-center align-items-center">
-                <div class="card rounded-3 text-black">
-                    <div class="card-body">
-                        <div class="text-center">
-                            <img id="logoImgUts" src="{% static 'img/Logo-UTS.png' %}" alt="logo">
-                            <h4 class="text-bold">Biblioteca Digital</h4>
-                            <h5>¡Bienvenido!</h5>
+        <div class="container d-flex justify-content-center align-content-center vh-100">
+            <div class="row justify-content-center align-content-center">
+                <div class="col-10 col-sm-5 col-md-7 col-lg-6">
+                    <div class="card rounded-3 text-black">
+                        <div class="card-body">
+                            <div class="text-center">
+                                <img id="logoImgUts" src="{% static 'img/Logo-UTS.png' %}" alt="logo">
+                                <h4 class="text-bold">Biblioteca Digital</h4>
+                                <h5>¡Bienvenido!</h5>
+                            </div>
+                            <form class="form mt-1" method="post">
+                                {% csrf_token %}
+                                <div class="wrap-input100">
+                                    <input class="input100" type="text" name="login" placeholder="Matricula">
+                                    <span class="focus-input100"></span>
+                                    <span class="symbol-input100">
+                                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                                <div class="wrap-input100">
+                                    <input class="input100" type="password" name="password" placeholder="Contraseña">
+                                    <span class="focus-input100"></span>
+                                    <span class="symbol-input100">
+                                        <i class="fa fa-lock" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                                <div class="container-login100-form-btn">
+                                    <button type="submit" class="login100-form-btn">
+                                        Ingresar
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                        <form class="form mt-1" method="post">
-                            {% csrf_token %}
-                            <div class="wrap-input100">
-                                <input class="input100" type="text" name="login" placeholder="Matricula">
-                                <span class="focus-input100"></span>
-                                <span class="symbol-input100">
-                                    <i class="fa fa-envelope" aria-hidden="true"></i>
-                                </span>
-                            </div>
-                            <div class="wrap-input100">
-                                <input class="input100" type="password" name="password" placeholder="Contraseña">
-                                <span class="focus-input100"></span>
-                                <span class="symbol-input100">
-                                    <i class="fa fa-lock" aria-hidden="true"></i>
-                                </span>
-                            </div>
-                            <div class="container-login100-form-btn">
-                                <button type="submit" class="login100-form-btn">
-                                    Ingresar
-                                </button>
-                            </div>
-                        </form>
                     </div>
                 </div>
             </div>

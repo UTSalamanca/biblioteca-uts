@@ -11,7 +11,7 @@ from sito.models import Alumno, AlumnoGrupo, Grupo, Carrera, Usuario, Persona, P
 from static.helpers import *
 
 # Create your views here.
-def catalago_View(request):
+def catalago(request):
     data_prestamo = 'Interno: Préstamos dentro de la universidad. Externo: Préstamos fuera de la universidad, con 6 días permitidos como límite.'
     form = catalogo_form()
     side_code = 400
@@ -19,7 +19,7 @@ def catalago_View(request):
     return render(request, 'index_catalogo.html', {"side_code": side_code, "listado":listado, "form":form, "data_prestamo": data_prestamo})
 
 # Genera la vista para la tabla de prestamos
-@groups_required('Administrador')
+# @groups_required('Administrador')
 def prestamos_View(request):
     side_code = 401
     listado = model_catalogo.objects.all()
@@ -143,11 +143,11 @@ def prestamo_registro(request):
                     if exist_book.cant > 0:
                         if form.cleaned_data['cantidad_i'] < 0:
                             messages.add_message(request, messages.INFO, 'No puedes ingresar una cantidad negativa')
-                            return redirect('catalago_View')
+                            return redirect('catalago')
                         if form.cleaned_data['cantidad_i'] > exist_book.cant:
                             # Redirigir a la vista deseada
                             messages.add_message(request, messages.INFO, 'La solicitud excedió la cantidad de libros')
-                            return redirect('catalago_View')
+                            return redirect('catalago')
                         # Si la cantidad de los libros es mayor a 0, se realiza el prestamo
                         cve_prestamo = create_cve(form.cleaned_data['nom_alumno'], form.cleaned_data['colocacion'])
                         nom_libro = form.cleaned_data['nom_libro']
@@ -163,7 +163,7 @@ def prestamo_registro(request):
                         entrega = 'Proceso'
                         fechaP = now().replace(microsecond=0)
 
-                        catalago_View=model_catalogo.objects.create(
+                        catalago=model_catalogo.objects.create(
                                 cve_prestamo = cve_prestamo,
                                 nom_libro = nom_libro,
                                 nom_autor = nom_autor,
@@ -184,24 +184,24 @@ def prestamo_registro(request):
 
                         messages.add_message(request, messages.SUCCESS, 'Prestamo Solicitado')
                         # Redirigir a la vista deseada
-                        return redirect('get_book_for_person')
+                        return redirect('prestamos_usuario')
                     else:
                         messages.add_message(request, messages.INFO, 'Ejemplar agotado')
                         # Redirigir a la vista deseada
-                        return redirect('catalago_View')    
+                        return redirect('catalago')    
                 else:
                     messages.add_message(request, messages.INFO, 'Ejemplar no encontrado')
                     # Redirigir a la vista deseada
-                    return redirect('catalago_View')
+                    return redirect('catalago')
             else:
                 # Si el formulario no es válido, vuelve a renderizar el formulario con errores
                 messages.add_message(request, messages.ERROR, '¡Por favor, corrija los errores del formulario!')
-                return redirect('catalago_View')
+                return redirect('catalago')
         else:
             # Si no es un POST, se asume que es un GET
             form = catalogo_form()
             messages.add_message(request, messages.ERROR, '¡Algo salio mal!')
-            return redirect('catalago_View')
+            return redirect('catalago')
     except Exception as p:
         print(p)
         return HttpResponse("¡El proceso no se pudo realizar!", status=400)
@@ -231,12 +231,12 @@ def view_book(request, base64):
             ruta = name_temp.split('/code')[1]
         else:
             messages.add_message(request, messages.ERROR, 'Libro no encontrado')
-            return redire('catalago_View')
+            return redirect('catalago')
     except Exception as vi:
-        return redirect('catalago_View')
+        return redirect('catalago')
 
 # Carga la vista con la información del acervo
-@groups_required('Administrador')
+# @groups_required('Administrador')
 def cargar_portada(request):
     side_code = 402
     form = catalogo_form()
@@ -338,7 +338,7 @@ def book_delivered(request, cve, entrega):
             # Se guardan los cambios en la tabla del catalago
             book.save()
 
-            messages.add_message(request, messages.SUCCESS, 'Estado del prestamo cambiado')
+            messages.add_message(request, messages.SUCCESS, 'Estado del prestamo modificado')
             return redirect('prestamos_View')
         else:
             messages.add_message(request, messages.ERROR, '¡Algo salio mal!.')
@@ -349,7 +349,7 @@ def book_delivered(request, cve, entrega):
         return redirect('prestamos_View')
 
 # Vista, retorna todos los libros solicitados por el usuario
-def get_book_for_person(request):
+def prestamos_usuario(request):
     side_code = 403
     try:
         ref_matricula = str(request.user)

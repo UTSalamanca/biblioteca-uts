@@ -6,7 +6,6 @@
 
 .loaderCenter {
     height: 100vh;
-    margin-left: 10rem;
     background-color: rgba(0, 0, 0, 0.264);
     display: flex;
     justify-content: center;
@@ -17,12 +16,6 @@
     overflow: hidden;
 }
 
-.lds-roller {
-    display: inline-block;
-    position: relative;
-    width: 80px;
-    height: 80px;
-}
 
 .lds-roller div {
     animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
@@ -33,7 +26,7 @@
     content: " ";
     display: block;
     position: absolute;
-    width: 7.2px;
+    /* width: 7.2px;*/
     height: 7.2px;
     border-radius: 50%;
     background: currentColor;
@@ -55,7 +48,7 @@
 
 .lds-roller div:nth-child(2):after {
     top: 67.71281px;
-    left: 56px;
+    /* left: 56px;*/
 }
 
 .lds-roller div:nth-child(3) {

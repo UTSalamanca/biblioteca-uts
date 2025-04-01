@@ -18,16 +18,12 @@
     align-items: center;
 }
 
-#proyectos .table-responsive {
-    border-radius: 0 0 10px 10px;
-}
-
 #pdfContainer {
     height: 600px;
     overflow-y: scroll;
     border: 1px solid #ccc;
 }
 
-table.dataTable td {
+table.dataTable td, th {
     font-size: 0.9rem;
 }

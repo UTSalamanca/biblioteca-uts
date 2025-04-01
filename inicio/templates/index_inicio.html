@@ -22,21 +22,22 @@
             </div>
         </div><!-- /.container-fluid -->
     </section>
-    <div class="row">
-        <div class="col-xl-6 ms-3">
-            <a href="{% url 'report' %}" class="btn btn-success" id="btn_report">Generar reporte</a>
-            </a>
-        </div>
-    </div>
     <!-- Etiquetas de estado -->
     <section class="content-header" id="tags">
         <div class="container-fluid">
+            
+            <div class="row mb-2">
+                <div class="col-xl-6">
+                    <a class="btn btn-success" id="btn_report" onclick="reportMensual()">Generar reporte</a>
+                    </a>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-xl-6">
                     <div class="small-box bg-info">
                         <div class="inner">
                             <h3>{{ data.total_book }}</h3>
-                            <p>Libros totales en existencia</p>
+                            <p>Ejemplares totales en existencia</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-boxes"></i>
@@ -49,7 +50,7 @@
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>{{ data.book_prestados_t }}</h3>
-                            <p>Libros prestados en el mes</p>
+                            <p>Titulos prestados en el mes</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-calendar-alt"></i>
@@ -62,7 +63,7 @@
                     <div class="small-box bg-warning">
                         <div class="inner">
                             <h3>{{ data.book_movimiento }}</h3>
-                            <p>Libros en movimiento</p>
+                            <p>Titulos en movimiento</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-spinner"></i>
@@ -74,11 +75,19 @@
             </div>
             <div id="contentTitle" class="row">
                 <div class="col-xl-6 align-self-center">
-                    <h5 class="text-bold">Visualizaciones de reportes</h5>
+                    <h5 class="text-bold">Visualizaciones de los reportes de estadía</h5>
                 </div>
             </div>
             <div class="table-responsive bg-white p-2" id="table_views_report">
-                <table id="tbl_prestamo_es" class="cell-border stripe" style="width:100%">
+                <div class="justify-content-left col-3 d-flex">
+                    <span class="me-1" >Periodo</span>
+                    <select class="form-select w-auto" id="periodo_opt">
+                        <option value="all">Todo</option>
+                        <option value="0">Este mes</option>
+                        <option value="1">Mes anterior</option>
+                    </select>
+                </div>
+                <table id="tbl_prestamo_es" class="table table-striped" style="width:100%;">
                     <thead>
                         <tr>
                             <th class="text-center">Persona quien consulta</th>
@@ -94,7 +103,7 @@
                             title="{{ ctrl.fullname }}" style="cursor: pointer;">{{ctrl.persona}}</td>
                             <td class="text-center">{{ctrl.reporte}}</td>
                             <td class="text-center">{{ctrl.carrera}}</td>
-                            <td class="text-center">{{ctrl.fecha_consulta}}</td>
+                            <td class="text-center">{{ctrl.fecha_consulta|date:"d-m-Y"}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -111,7 +120,7 @@
                 </div>
                 <div class="col-xl-4">
                     <figure class="highcharts-figure" id="chartColum" data-libros="{{ data.cant_libros }}"
-                        data-discos="{{ data.cant_discos }}">
+                        data-discos="{{ data.cant_discos }}" data-revistas="{{ data.cant_revistas }}">
                         <div id="container_colum"></div>
                     </figure>
                 </div>

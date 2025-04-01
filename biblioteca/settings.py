@@ -1,10 +1,11 @@
 from pathlib import Path
-import os
+import os, environ, base64
+from dotenv import load_dotenv
+from decouple import config
 import pprint
 from django.http import HttpResponse
 from django.utils.deprecation import MiddlewareMixin
 from static.exceptions import DebugException
-import environ
 from django.contrib.messages import constants as messages
 from static.utils import dd
 
@@ -23,23 +24,20 @@ MIDDLEWARE = [
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
-env = environ.Env(
-    DEBUG=(bool, True)
-)
+env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-i-quay)0vi@ofqo!o*js^01l_p7s+sh^c7!mdydd53y0x5lb3w'
-
+# SECRET_KEY = 'django-insecure-i-quay)0vi@ofqo!o*js^01l_p7s+sh^c7!mdydd53y0x5lb3w'
+SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DJANGO_DEBUG", default=False)
 # DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['*']  # O tu dominio si es necesario
@@ -129,7 +127,6 @@ TEMPLATES = [
                 'static.context_processors.user_permissions_and_groups',
                 'static.context_processors.group_permission',
                 'static.context_processors.get_alumnos_clase',
-                # 'static.context_processors.get_grupo',
             ],
         },
     },
@@ -140,8 +137,6 @@ WSGI_APPLICATION = 'biblioteca.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-DB_PASS_SITO = env('DB_PASS_SITO')
-# print(f'DB_PASS_SITO = {DB_PASS_SITO}')
 
 DATABASES = {
     'default': {
@@ -150,12 +145,11 @@ DATABASES = {
     },
       'sito': {
         'ENGINE': 'mssql',
-        'NAME': env('DB_NAME_SITO'),
-        'USER': env('DB_USER_SITO'),
-        'PASSWORD': '$A7$P#p?KHdb',
-        # 'PASSWORD': env(DB_PASS_SITO),
-        'HOST': env('DB_HOST_SITO'),
-        'PORT': env('DB_PORT_SITO'),
+        'HOST': os.environ.get('DB_HOST_SITO'),
+        'NAME': os.environ.get('DB_NAME_SITO'),
+        'USER': os.environ.get('DB_USER_SITO'),
+        'PASSWORD': os.environ.get('DB_PASS_SITO'),
+        'PORT': os.environ.get('DB_PORT_SITO'),
         'OPTIONS':  {
             'driver': 'ODBC Driver 17 for SQL Server'
         }
