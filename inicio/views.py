@@ -11,11 +11,19 @@ import calendar
 
 # Create your views here.
 def index_inicio(request):
+    """Devuelve información formateada para muestra en el index segun el tipo de perfil
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        array: Información recopilada
+    """
     # Se asigna el código para el focus en el sidebar
     side_code = 100
 
-    # if request.user.groups.filter(name='Administrador').exists():
-    if request.user.groups.filter(name='Alumno').exists():
+    if request.user.groups.filter(name='Administrador').exists():
+    # if request.user.groups.filter(name='Alumno').exists():
         # Se obtienen todos los datos del acervo
         datos = acervo_model.objects.all()
         # Se realiza el conteo de todos los libros
@@ -53,6 +61,15 @@ def index_inicio(request):
         return render(request, 'index_general.html', { "data": data })
 
 def cont_books(datos, type):
+    """Contreo de ejemplares
+
+    Args:
+        datos (array): Información obtenida de la tabla
+        type (string): Tipo de consulta
+
+    Returns:
+        array: Información formateada
+    """
     total_book = 0
     totals = {}
     if type == 't':
@@ -98,6 +115,14 @@ def cont_books(datos, type):
     return totals
 
 def get_states(datos):
+    """Realiza el conteo de los estados
+
+    Args:
+        datos (array): Información completa de los estados
+
+    Returns:
+        array: Información formateada
+    """
     states = []
     EXC = 0
     BUE = 0
@@ -122,6 +147,14 @@ def get_states(datos):
     }
 
 def get_adqui(datos):
+    """Realiza el conteo de los tipos de adquisiciones
+
+    Args:
+        datos (array): Información completa de las aquisiciones 
+
+    Returns:
+        array: Información formateada
+    """
     t_adqui = []
     name_cole =  []
     for adq in datos:
@@ -141,6 +174,14 @@ def get_adqui(datos):
     }
 
 def ctrl_view_report(info):
+    """Recopila la vistas realizadas a los reportes
+
+    Args:
+        info (array): información de todas las vistas
+
+    Returns:
+        array: información formateada
+    """
     data = {}
     data_all = []
 

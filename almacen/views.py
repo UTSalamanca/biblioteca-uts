@@ -11,15 +11,31 @@ from static.helpers import *
 from django.utils.timezone import now
 
 # Create your views here.
-# @groups_required('Administrador')
+@groups_required('Administrador')
 def index_acervo(request):
-        side_code = 200
-        listado = acervo_model.objects.all()
-        form = registro_form()
-        return render(request, 'index_almacen.html', { "list_acervo": listado, "form":form, "side_code":side_code})
+    """Devuelve toda la información de acervo hacia el index
 
-# @groups_required('Administrador')
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        array: Arreglo con la información filtrada.
+    """
+    side_code = 200
+    listado = acervo_model.objects.all()
+    form = registro_form()
+    return render(request, 'index_almacen.html', { "list_acervo": listado, "form":form, "side_code":side_code})
+
+@groups_required('Administrador')
 def acervo_registro(request):
+    """Función para agregar un nuevo registro en base de datos
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        Void
+    """
     if request.method == 'POST':
         form = registro_form(request.POST)
         if form.is_valid():
@@ -67,22 +83,48 @@ def acervo_registro(request):
         messages.add_message(request, messages.ERROR, '¡Algo salio mal!')
         return redirect('acervo')
 
-# @groups_required('Administrador')
+@groups_required('Administrador')
 def delete_acervo(request, col):
-        acervo_delete = acervo_model.objects.filter(colocacion=col).first()
-        acervo_delete.delete()
-        messages.add_message(request, messages.SUCCESS, 'Registro eliminado')
-        return redirect(to="acervo")
+    """Función para el borrado de registros de base de datos
 
-# @groups_required('Administrador')
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+        col (string): Colocación de referencia del registro
+
+    Returns:
+        Void
+    """
+    acervo_delete = acervo_model.objects.filter(colocacion=col).first()
+    acervo_delete.delete()
+    messages.add_message(request, messages.SUCCESS, 'Registro eliminado')
+    return redirect(to="acervo")
+
+@groups_required('Administrador')
 def edit_register(request, col):
-      register = acervo_model.objects.filter(colocacion=col).first()
-      listado = acervo_model.objects.all()
-      return redirect(reverse('acervo')+'?'+{"register":register})
-      # return redirect(request, 'index_almacen.html', { "id_edit": register, "list_acervo": listado})
+    """Función para filtar y devolver la información de un registro en especifico
 
-# @groups_required('Administrador')
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+        col (string): Colocación de referencia para el registro 
+
+    Returns:
+        array: Retorna arreglo con la información filtrada del registro encontrado
+    """
+    register = acervo_model.objects.filter(colocacion=col).first()
+    listado = acervo_model.objects.all()
+    return redirect(reverse('acervo')+'?'+{"register":register})
+    # return redirect(request, 'index_almacen.html', { "id_edit": register, "list_acervo": listado})
+
+@groups_required('Administrador')
 def edit_acervo(request):
+    """Función para realiar la edición de los registros
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        Void
+    """
     if request.method == 'POST':
         form = registro_form(request.POST)
         if form.is_valid():

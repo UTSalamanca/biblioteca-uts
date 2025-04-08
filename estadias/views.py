@@ -30,6 +30,14 @@ def add_group_name_to_contex(view_class):
 
 # Función que obtiene todos los grupos de control y el nombre del usuario registrado
 def get_fullname_grupo(request):
+    """Busca y devuelve la información del grupo del usuario actual
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        array: Información encontrada de grupo para el usuario actual
+    """
     user = request.user
     cve = Usuario.objects.get(login=user)
     persona = Persona.objects.get(cve_persona=cve.cve_persona)
@@ -42,22 +50,31 @@ def get_fullname_grupo(request):
 
 # Index principal
 def index_proyectos(request):
+    """Devulve al index la informacion de todos los reportes registrados
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        array: información recopilada
+    """
     form = estadias_form()
     # Código para control de pestañas en sidebar
     side_code = 300
-    # fullname = get_fullname_grupo(request)['name']
-    # flag = True
-    # if '32 Tutoreo - Tutor' in get_fullname_grupo(request)['group']:
-    #     flag = False
-    #     reporte = model_estadias.objects.filter(asesor_academico=fullname)
-    #     reporte_all = model_estadias.objects.all()
-    #     return render(request,'index_proyectos.html',{"reporte":reporte, "reporte_all":reporte_all, "form":form,"side_code":side_code})
     
     reporte = model_estadias.objects.all()
     return render(request,'index_proyectos.html',{"reporte":reporte, "form":form,"side_code":side_code})
 
 @groups_required('32 Tutoreo - Tutor', 'Administrador')
 def estadias_registro(request):
+    """Agrega nuevo reporte en base de datos
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        Void
+    """
     try:
         if request.method == 'POST':
             # Validar existencia de proyectos
@@ -130,6 +147,14 @@ def estadias_registro(request):
 
 # Función para convertir documento a base64
 def convert_base64(file):
+    """Convierte el reporte pdf en base64
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+        
+    Returns:
+        file: Archivo pdf
+    """
     try:
         if not hasattr(file, 'read'):
             raise ValueError("El archivo no es válido o no tiene datos para leer.")
@@ -140,6 +165,14 @@ def convert_base64(file):
 
 # Crea el archivo temporal para la visualización del mismo
 def temporary_file_base_64(base_64_input):
+    """Crea un archivo pdf temporal para que pueda ser visualizado en la interfaz
+
+    Args:
+        base_64_input (objeto): Pdf agregado en el registro
+
+    Returns:
+        string: Ruta de almacenamiento del archivo temporal
+    """
     # base64_string = base_64_input.strip().split(',')[1]
     decoded_bytes = base64.b64decode(base_64_input)
     file_temp, path_temp = tempfile.mkstemp(suffix=".pdf", dir=settings.MEDIA_ROOT + "/")
@@ -153,6 +186,15 @@ def temporary_file_base_64(base_64_input):
 
 # Función para mostrar file report
 def view_report(request, report_rute):
+    """Pinta el archivo pdf en la interfaz
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+        report_rute (string): Ruta del archivo pdf temporal para la vista en interfaz
+
+    Returns:
+        array: Arreglo con información del autor del reporte
+    """
     try:
         # Código de ubicación para sidebar
         side_code = 301
@@ -167,6 +209,14 @@ def view_report(request, report_rute):
         print(f"Error en al generar vista de PDF: {v}")
 
 def insert_consult(request):
+    """Función para registrar en base de datos la consulta a un reporte
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        array: Información recopilada
+    """
     try:
         user_id = request.POST.get('user_id')
         name_reporte = request.POST.get('name_reporte')
@@ -203,6 +253,15 @@ def insert_consult(request):
         return JsonResponse({"success": False, "message": "Error al procesar la solicitud."}, status=500)
 
 def servir_pdf(request, report_rute):
+    """Sirve el reporte para la visualización
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+        report_rute (string): Ruta del archivo pdf temporal
+
+    Returns:
+        objeto: Objeto
+    """
     file_path = os.path.join(settings.MEDIA_ROOT, report_rute)
     response = FileResponse(open(file_path, 'rb'), content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="mi_documento.pdf"'
@@ -211,6 +270,14 @@ def servir_pdf(request, report_rute):
 @groups_required('32 Tutoreo - Tutor', 'Administrador')
 # Función de búsqueda para retorno de información por búsqueda con matricula
 def get_alumno(request):
+    """Devuelve la información del alumno, esperada de petición ajax
+
+    Args:
+        request (object): Objeto que contiene la información sobre la solicitud HTTP
+
+    Returns:
+        array: Información encontrada del alumno
+    """
     matricula = request.GET.get('matricula')
     if matricula:
         cve_persona = ''
