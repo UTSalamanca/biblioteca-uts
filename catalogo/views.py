@@ -27,7 +27,7 @@ def catalago(request):
     return render(request, 'index_catalogo.html', {"side_code": side_code, "listado":listado, "form":form, "data_prestamo": data_prestamo})
 
 # Genera la vista para la tabla de prestamos
-@groups_required('Administrador')
+@groups_required('Biblioteca')
 def prestamos_View(request):
     """Función para el recopialdo de la información para los dashboard y tablas de inicio
 
@@ -294,7 +294,7 @@ def view_book(request, base64):
         return redirect('catalago')
 
 # Carga la vista con la información del acervo
-@groups_required('Administrador')
+@groups_required('Biblioteca')
 def cargar_portada(request):
     """Muestra la información de catalogos
 

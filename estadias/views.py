@@ -65,7 +65,7 @@ def index_proyectos(request):
     reporte = model_estadias.objects.all()
     return render(request,'index_proyectos.html',{"reporte":reporte, "form":form,"side_code":side_code})
 
-@groups_required('32 Tutoreo - Tutor', 'Administrador')
+@groups_required('32 Tutoreo - Tutor', 'Biblioteca')
 def estadias_registro(request):
     """Agrega nuevo reporte en base de datos
 
@@ -267,7 +267,7 @@ def servir_pdf(request, report_rute):
     response['Content-Disposition'] = 'inline; filename="mi_documento.pdf"'
     return response
 
-@groups_required('32 Tutoreo - Tutor', 'Administrador')
+@groups_required('32 Tutoreo - Tutor', 'Biblioteca')
 # Función de búsqueda para retorno de información por búsqueda con matricula
 def get_alumno(request):
     """Devuelve la información del alumno, esperada de petición ajax

@@ -5,8 +5,8 @@
 <aside class="main-sidebar main-sidebar-custom sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="{% url 'inicio' %}" class="brand-link">
-        <img src="{% static 'img/utsLogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
-            style="opacity: .8">
+        <img src="{% static 'img/utsLogo.png' %}" alt="AdminLTE Logo" class="brand-image"
+            style="width: 55px; height: 100%;">
         <span class="brand-text font-weight-light">BibliotecaDigital</span>
     </a>
     
@@ -40,7 +40,7 @@
                         </a>
                 </li>
                 <!-- Sección de Acervo -->
-                {% if 'Administrador' in grupo_control %}
+                {% if 'Biblioteca' in grupo_control %}
                 <li class="nav-item">
                     {% if side_code == 200 %}
                     <a href="{% url 'acervo' %}" class="nav-link active">
@@ -88,7 +88,7 @@
                                         <p>Préstamos solicitados</p>
                                     </a>
                             </li>
-                            {% if 'Administrador' in grupo_control %}
+                            {% if 'Biblioteca' in grupo_control %}
                             <li class="nav-item">
                                 {% if side_code == 401 %}
                                 <a href="{% url 'prestamos_View' %}" class="nav-link active">

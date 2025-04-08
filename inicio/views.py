@@ -22,7 +22,7 @@ def index_inicio(request):
     # Se asigna el código para el focus en el sidebar
     side_code = 100
 
-    if request.user.groups.filter(name='Administrador').exists():
+    if request.user.groups.filter(name='Biblioteca').exists():
     # if request.user.groups.filter(name='Alumno').exists():
         # Se obtienen todos los datos del acervo
         datos = acervo_model.objects.all()
@@ -442,8 +442,8 @@ def report(request, periodo):
         # Evita que se agregen duplicados
         if carrera.abreviatura not in conc_carreras:
             # Valida que este 
-            if carrera.activo:
-                conc_carreras[carrera.abreviatura] = carrera.nombre
+            # if carrera.activo:
+            conc_carreras[carrera.abreviatura] = carrera.nombre
     # Obtiene el número de visitas a los reportes de estadías
     views = register_view.objects.all()
     vistas_reportes = {}

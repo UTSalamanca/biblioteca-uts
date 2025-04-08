@@ -112,7 +112,7 @@ def table_acervo(sheet, data):
     # Agranda el tamaño de la celda A
     sheet.column_dimensions['A'].width = 10
     # Agranda el tamaño de la celda B
-    sheet.column_dimensions['B'].width = 25
+    sheet.column_dimensions['B'].width = 30
     sheet.merge_cells('B12:B13')
     sheet['B12'].border = get_borders('all')
     sheet['B13'].border = get_borders('all')
@@ -545,7 +545,7 @@ def table_reporte_estadias(sheet, data):
     # Nombre de proyecto
     sheet[f"B{new_cell}"] = "Nombre de proyecto"
     sheet[f"B{new_cell}"].alignment = centrado
-    sheet.column_dimensions['B'].width = 25
+    sheet.column_dimensions['B'].width = 30
     # Nombre de la carrea
     sheet[f"C{new_cell}"] = "Carrera relacionada"
     sheet[f"C{new_cell}"].alignment = centrado
@@ -619,7 +619,7 @@ def table_prestamos(sheet, data):
     # Agranda el tamaño de la celda A
     sheet.column_dimensions['A'].width = 10
     # Agranda el tamaño de la celda B
-    sheet.column_dimensions['B'].width = 25
+    sheet.column_dimensions['B'].width = 30
     sheet.merge_cells('B12:B13')
     sheet['B12'].border = get_borders('all')
     sheet['B13'].border = get_borders('all')

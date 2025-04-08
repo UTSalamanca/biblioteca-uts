@@ -11,7 +11,7 @@ from static.helpers import *
 from django.utils.timezone import now
 
 # Create your views here.
-@groups_required('Administrador')
+@groups_required('Biblioteca')
 def index_acervo(request):
     """Devuelve toda la información de acervo hacia el index
 
@@ -26,7 +26,7 @@ def index_acervo(request):
     form = registro_form()
     return render(request, 'index_almacen.html', { "list_acervo": listado, "form":form, "side_code":side_code})
 
-@groups_required('Administrador')
+@groups_required('Biblioteca')
 def acervo_registro(request):
     """Función para agregar un nuevo registro en base de datos
 
@@ -83,7 +83,7 @@ def acervo_registro(request):
         messages.add_message(request, messages.ERROR, '¡Algo salio mal!')
         return redirect('acervo')
 
-@groups_required('Administrador')
+@groups_required('Biblioteca')
 def delete_acervo(request, col):
     """Función para el borrado de registros de base de datos
 
@@ -99,7 +99,7 @@ def delete_acervo(request, col):
     messages.add_message(request, messages.SUCCESS, 'Registro eliminado')
     return redirect(to="acervo")
 
-@groups_required('Administrador')
+@groups_required('Biblioteca')
 def edit_register(request, col):
     """Función para filtar y devolver la información de un registro en especifico
 
@@ -115,7 +115,7 @@ def edit_register(request, col):
     return redirect(reverse('acervo')+'?'+{"register":register})
     # return redirect(request, 'index_almacen.html', { "id_edit": register, "list_acervo": listado})
 
-@groups_required('Administrador')
+@groups_required('Biblioteca')
 def edit_acervo(request):
     """Función para realiar la edición de los registros
 
