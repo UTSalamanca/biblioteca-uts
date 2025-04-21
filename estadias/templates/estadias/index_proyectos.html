@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Proyectos de estadías{% endblock %}
+{% block content %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/estadias.css' %}">
+{% endblock %}
+
+<!-- Content Header (Page header) -->
+<div id="proyectos">
+    <section class="content-header mt-5">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Proyectos de estadías</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'inicio:inicio' %}"><i
+                                    class="fas fa-home" style="color: black;"></i></a>
+                        </li>
+                        <li class="breadcrumb-item text-info">Proyectos de estadías</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <div class="content mx-4 pb-4">
+        <div id="contentTitle" class="row">
+            <div class="col-xl-6 align-self-center">
+                <h5 class="text-bold">Concentrado de reportes</h5>
+            </div>
+            {% if '32 Tutoreo - Tutor' in grupo_control or 'Biblioteca' in grupo_control %}
+            <div class="col-xl-6">
+                <a type="button" id="btnPlusBook" class="btn float-right" data-bs-toggle="modal"
+                    data-bs-target="#modal_registro">Registrar proyecto<i class="fas fa-plus ml-1"></i>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="table-responsive bg-white p-2">
+            <div class="row pb-2">
+                <div class="col-xl-6 d-flex">
+                    <span class="align-content-center mr-1">Mostrar </span>
+                    <form method="GET" id="form_tab_select">
+                        <select name="m_tab" id="select_tabs" class="form-select">
+                            <option value="10" {% if request.GET.m_tab == "10" %}selected{% endif %}>10</option>
+                            <option value="20" {% if request.GET.m_tab == "20" %}selected{% endif %}>20</option>
+                            <option value="50" {% if request.GET.m_tab == "50" %}selected{% endif %}>50</option>
+                            <option value="100" {% if request.GET.m_tab == "100" %}selected{% endif %}>100</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="col-xl-6">
+                    <div class="search d-flex justify-content-end">
+                        <form method="GET">
+                            <div id="custom-search-input">
+                                <div class="input-group col-md-12">
+                                    <input type="search" class="form-control" placeholder="Buscar..." name="buscar" value="{{ request.GET.buscar }}">
+                                    <span class="input-group-list">
+                                        <i class="icon icon-search"></i>
+                                        <button type="submit" class="btn">Buscar</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% if reporte %}
+                <table id="ProyectosTable" class="table table-striped" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Proyecto</th>
+                            <th class="text-center">Alumno</th>
+                            <th class="text-center">Asesor Académico</th>
+                            <th class="text-center">Generación</th>
+                            <th class="text-center">Asesor Organizacional</th>
+                            <th class="text-center">Empresa</th>
+                            <th class="text-center">Carrera</th>
+                            <th class="text-center">Reporte</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in reporte %}
+                        <tr data-report="{{ p.reporte }}">
+                            <td>{{p.proyecto}}</td>
+                            <td>{{p.alumno}}</td>
+                            <td>{{p.asesor_academico}}</td>
+                            <td>{{p.generacion}}</td>
+                            <td>{{p.asesor_orga}}</td>
+                            <td>{{p.empresa}}</td>
+                            <td>{{p.carrera}}</td>
+                            <td class="text-center">
+                                <a href="{% url 'estadias:view_report' p.reporte %}" onclick="actualizarEstadia(['{{ user }}','{{ p.reporte }}','{{ p.id }}'])" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="Ver reporte"><i class="fas fa-file-pdf" style="color: #cf2121;"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% include 'estadias/paginacion.html' %}
+            {% else %}
+                {% include 'sin_registros.html' %}
+            {% endif %}
+        </div>
+    </div>
+    <p id="response_sweetalert" data-resp="{{ response }}" style="display: none;"></p>
+</div>
+{% include 'estadias/modal.html' %}
+{% endblock %}
+{% block js %}
+<script src="{% static 'js/estadias.js' %}"></script>
+{% endblock %}

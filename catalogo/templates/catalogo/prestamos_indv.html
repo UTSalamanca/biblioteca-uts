@@ -1,0 +1,149 @@
+{%extends 'base.html'%}
+{%load static%}
+{%block title%}Listado de préstamos{%endblock%}
+{%block content%}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/catalogo.css' %}">
+{% endblock %}
+
+<div id="pedidos">
+    <section class="content-header mt-5">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Préstamos solicitados</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'inicio:inicio' %}">
+                            <i class="fas fa-home" style="color: black;"></i></a>
+                        </li>
+                        <li class="breadcrumb-item text-info">Préstamos solicitados</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <div class="content mx-4 pb-4">
+        <div id="contentTitle" class="row">
+            <div class="col-xl-6 align-self-center">
+                <h5 class="text-bold">Solicitudes</h5>
+            </div>
+            <div class="col-xl-6">
+                <a href="{% url 'catalogo:catalago' %}" id="btnPlusBook" class="btn float-right">Solicitar préstamo<i class="fas fa-plus ml-1"></i>
+                </a>
+            </div>
+        </div>
+        <div class="table-responsive bg-white p-2">
+            <div class="row pb-2">
+                <div class="col-xl-6 d-flex">
+                    <span class="align-content-center mr-1 mt-1">Mostrar</span>
+                    <form method="GET" id="form_tab_select">
+                        <select name="m_tab" id="select_tabs" class="form-select">
+                            <option value="10" {% if request.GET.m_tab == "10" %}selected{% endif %}>10</option>
+                            <option value="20" {% if request.GET.m_tab == "20" %}selected{% endif %}>20</option>
+                            <option value="50" {% if request.GET.m_tab == "50" %}selected{% endif %}>50</option>
+                            <option value="100" {% if request.GET.m_tab == "100" %}selected{% endif %}>100</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="col-xl-6">
+                    <div class="search d-flex justify-content-end">
+                        <form method="GET">
+                            <div id="custom-search-input">
+                                <div class="input-group col-md-12">
+                                    <input type="search" class="form-control" placeholder="Buscar..." name="buscar" value="{{ request.GET.buscar }}">
+                                    <span class="input-group-list">
+                                        <i class="icon icon-search"></i>
+                                        <button type="submit" class="btn">Buscar</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% if listado %}
+                <table id="prestamoTable" class="table table-striped" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th class="text-center">Clave</th>
+                        <th class="text-center">Título</th>
+                        <th class="text-center">Autor</th>
+                        <th class="text-center">Edición</th>
+                        <th class="text-center">Cantidad</th>
+                        <th class="text-center">Tipo de préstamo</th>
+                        <th class="text-center">Días restantes de préstamo</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for p in listado %}
+                    <tr id="info_book">
+                        <td>{{p.cve_prestamo}}</td>
+                        <td>{{p.nom_libro}}</td>
+                        <td>{{p.nom_autor}}</td>
+                        <td>{{p.edicion}}</td>
+                        <td class="text-right">{{p.cantidad_m}}</td>
+                        <td>{{p.tipoP}}</td>
+                        <td class="text-center">
+                        {% if p.entrega == 'Entregado' %}
+                            {% if p.dias_restantes %}
+                            {% if p.dias_restantes >= 4 and p.dias_restantes <= 6 %}
+                            <i class="fas fa-circle" style="color:#2ed255; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="{{p.dias_restantes}}"></i>
+                            {% endif %}
+                            {% if p.dias_restantes >= 1 and p.dias_restantes <= 3 %}
+                            <i class="fas fa-circle" style="color:#ede057; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="{{p.dias_restantes}}"></i>
+                            {% endif %}
+                            {% if p.dias_restantes <= 0 %}
+                            <i class="fas fa-circle" style="color:#ff0000; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="Sobrepaso los días de préstamo"></i>
+                            {% endif %}
+                            {% elif p.dias_restantes == 0 %}
+                            <span class="text-bold text-warning">Último día</span>
+                            {% else %}
+                            <span>N/A</span>
+                            {% endif %}
+                        {% elif p.entrega == 'Devuelto' %}
+                        <span class="text-bold text-success" data-bs-toggle="tooltip" data-bs-placement="top"
+                        title="Devuelto: {{p.fechaD}}">Devuelto</span>
+                        {% else %}
+                        <span class="text-bold text-info">En proceso</span>
+                        {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% include 'catalogo/paginacion.html' %}
+            {% else %}
+                {% include 'sin_registros.html' %}
+            {% endif %}
+            <div class="row">
+                <div class="col-xl-10">
+                    <table>
+                        <td><i class="fas fa-circle" style="color:#2ed255"></i></td>
+                        <td class="pt-3 pl-1 pr-3">
+                            <p><i class="fas fa-long-arrow-alt-right"></i> Primeros días de préstamo</p>
+                        </td>
+                        <td><i class="fas fa-circle" style="color:rgb(237, 224, 87)"></i></td>
+                        <td class="pt-3 pl-1 pr-3">
+                            <p><i class="fas fa-long-arrow-alt-right"></i> Préstamo próximo a entregar</p>
+                        </td>
+                        <td><i class="fas fa-circle" style="color:rgb(255, 0, 0)"></i></td>
+                        <td class="pt-3 pl-1 pr-3">
+                            <p><i class="fas fa-long-arrow-alt-right"></i> Sobrepasó los días de préstamo</p>
+                        </td>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{%endblock%}
+{% block js %}
+<script src="{% static 'js/catalogo.js' %}"></script>
+{% endblock %}

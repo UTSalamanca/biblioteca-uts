@@ -1,6 +1,3 @@
-// Llama función para DataTable
-datatable('ProyectosTable', 0);
-
 let response
 response = $('#response_sweetalert').data('resp')
 
@@ -78,17 +75,14 @@ if (iframe.length != 0) {
         console.log('Error al cargar el PDF: ', error);
     });
 }
-
+// Acción de busqueda de alumno
 $('#modal_registro').on('shown.bs.modal', function () {
-    let asesor = $('#data_academico').data('academico');
-    $('input[name=asesor_academico]').val(asesor);
-
     $('#btn_search_matricula').on('click', function (e) {
         let matricula = $('#id_matricula').val()
         if (matricula != '') {
             $('#msg_search').attr('style', 'display:block')
             $.ajax({
-                url: '/get_alumno/',
+                url: "/estadias/get_alumno/",
                 data: { "matricula": matricula },
                 type: 'GET',
                 success: function (response) {
@@ -112,6 +106,11 @@ $('#modal_registro').on('shown.bs.modal', function () {
     })
 })
 
+// Manejo para cambio de tabs
+$('#select_tabs').on('change', function() {
+    $('#form_tab_select').submit();
+});
+
 // Función para vaciar los campos en el modal
 $('#modal_registro').on('hidden.bs.modal', function () {
     $('#msg_search').attr('style', 'display:none');
@@ -130,7 +129,7 @@ $('#modal_registro').on('hidden.bs.modal', function () {
 
 function actualizarEstadia(estadiaId) {
     $.ajax({
-        url: '/insert_consult/',
+        url: '/estadias/insert_consult/',
         data: { "user_id": estadiaId[0], "name_reporte": estadiaId[1], "id_reporte": estadiaId[2] },
         type: 'POST',
         headers: {
@@ -146,11 +145,30 @@ function actualizarEstadia(estadiaId) {
     
 }
 
+// Función para la busqueda de reportes
+function search_project() {
+    let data_search = $('input[name=buscar]').val();
+    console.log(data_search);
+    $.ajax({
+        url: '/estadias/getReporteFilter/',
+        data: { "search": data_search },
+        type: 'GET',
+        success: function (response) {
+            console.log(response);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    })
+}
+
 // Función genera un delay
 var sleepES5 = function(ms){
     var esperarHasta = new Date().getTime() + ms;
     while(new Date().getTime() < esperarHasta) continue;
 };
+
+
 
 // Función para realizar salto de input con Enter
 tabIndex_form('modal_registro', true);

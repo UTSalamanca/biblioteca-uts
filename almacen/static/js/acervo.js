@@ -1,6 +1,4 @@
 $(document).ready(function () {
-    // Llama función para DataTable
-    datatable('acervoTable', 4, 'asc');
 
     // Se estructura la información para el modal
     function struct_modal(title, autor, editorial, cantidad, colocacion, edicion, año, type_adqui, state, formato) {
@@ -22,7 +20,7 @@ $(document).ready(function () {
         formato = match[formato] != 'undefined' ? match[formato] : formato;
         state = match[state] != 'undefined' ? match[state] : state;
         
-        let struct = '<div class="info-box mb-3" style="background-color: #3c6382; color: white;">'
+        let struct = '<div class="info-box mb-3" style="background-color: #0a3d62; color: #fff;">'
             + '<span class="info-box-icon"><i class="fas fa-heading"></i></span>'
             + '<div class="info-box-content">'
             + '<span class="info-box-text">Título</span>'
@@ -160,11 +158,6 @@ $(document).ready(function () {
         })
     })
 
-    //Función muestra portada
-    $('#more_info_modal #viewCoverBtn').on('click', function () {
-        console.log('llega');
-    })
-    
     // Función para el borrado de elementos
     $('#acervoTable').on('click', 'tbody #info_data td a#remove_register', function (e) {
         let data = $(this).closest('#info_data').data(),
@@ -172,7 +165,7 @@ $(document).ready(function () {
             title = data['title'],
             text = "El registro no se podrá recuperar",
             icon = "warning",
-            rute = '/delete_acervo/'
+            rute = '/acervo/delete_acervo/'
         // Llama el SweetAlert del script notification
         register_deleteSwal(title, coloca, text, icon, rute)
     })
@@ -257,11 +250,31 @@ $(document).ready(function () {
         })
     });
 
+    // Control de inserciones
     $('#btnModalSend, #btnModalUpdate').on('click', function (event) {
         if ($('input[name="cant"]').val() <= 0) {
             event.preventDefault();
             process('¡Debes ingresar una cantidad mayor a 0!');
         };
+        // Busca que no exista un ejemplar igual
+        data = {
+            'col': $('input[name=colocacion]').val(),
+            'format': $('select[name=formato]').val()
+        }
+        $.ajax({
+            url: '/acervo/get_match/',
+            data: data,
+            type: 'GET',
+            success: function (response) {
+                if (response['respuesta'] == 1) {
+                    event.preventDefault();
+                    process('¡Ya existe un elemento con esta colocación!');
+                } else {
+                    $('#tbl_addBook').submit();
+                }
+            },
+            error: function (error) { console.log(error); }
+        });
     });
 
     // Función para el borrado de registros
@@ -270,10 +283,15 @@ $(document).ready(function () {
         let title = 'Eliminar';
         let text = 'El registro no se podrá recuperar';
         let icon = 'question';
-        let rute = '/delete_acervo/';
+        let rute = 'acervo/delete_acervo/';
         register_deleteSwal(title, colocacion, text, icon, rute)
     });
 
+    // Manejo para cambio de tabs
+    $('#select_tabs').on('change', function() {
+        $('#form_tab_select').submit();
+    });
+    
     // Función para realizar salto de input con Enter
     tabIndex_form('acervo_add');
 })

@@ -7,13 +7,12 @@ from django.contrib import messages
 from sistema.models import UsuarioAcceso
 from sito.models import Usuario, UsuarioGrupoSeguridad
 from usuario.forms import LoginForm, RegisterUserForm, PerfilForm
-from static.helpers import dd
 from sito.models import Persona
 from django.urls import reverse
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('inicio')
+        return redirect('inicio:inicio')
 
     form = LoginForm(request.POST or None)  # Instanciar el formulario
 
@@ -34,7 +33,7 @@ def login_view(request):
                     auth_login(request, sistema_usuario)
                     if 'next' in request.GET:
                         return redirect(request.GET['next'])
-                    return redirect("inicio")
+                    return redirect("inicio:inicio")
                 else:
                     # Credenciales incorrectas
                     # messages.error(request, "Por favor introduzca un nombre de usuario y contraseña correctos.")
@@ -66,7 +65,7 @@ def login_view(request):
                     auth_login(request, sistema_usuario)
                     if 'next' in request.GET:
                         return redirect(request.GET['next'])
-                    return redirect("inicio")
+                    return redirect("inicio:inicio")
                 else:
                     # El usuario no existe en ninguna de las tablas
                     # messages.error(request, "Por favor introduzca un nombre de usuario y contraseña correctos.")

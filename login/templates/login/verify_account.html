@@ -1,0 +1,50 @@
+{% extends 'login/base.html' %}
+
+{% block title %} Verificar Cuenta {% endblock %}
+
+{% load static %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-content-center vh-100">
+    <div class="row justify-content-center align-content-center">
+        <div class="col-12 col-sm-5 col-md-7 col-lg-6">
+            <div class="card rounded-3 text-black">
+                <div class="card-body">
+                    <form class="login100-form validate-form flex-sb flex-w" method="POST">
+                        {% csrf_token %}
+                        <span class="login100-form-title p-b-18">
+                            Verificar Cuenta
+                        </span>
+                        <div class="text-center">
+                            <p class="mb-2">
+                                Por favor, ingresa el código de verificación que enviamos a tu correo electrónico.
+                            </p>
+                            <p class="mb-2">
+                                <strong>{{ email }}</strong>
+                            </p>
+                            <p class="mb-2">
+                                <small>No olvides revisar tu bandeja de spam.</small>
+                            </p>
+                        </div>
+
+                        {% if messages %}
+                        {% include 'login/messages.html' %}
+                        {% endif %}
+                        <div class="wrap-input100 validate-input mt-4" data-validate="El código de verificación es requerido">
+                            <input class="input100" type="text" name="codigo_verificacion" pattern="\d*" inputmode="numeric"
+                                autocomplete="off" aria-label="Código de verificación" maxlength="6" required>
+                            <span class="focus-input100"></span>
+                        </div>
+
+                        <div class="container-login100-form-btn m-t-17">
+                            <button class="login100-form-btn" type="submit">
+                                Confirmar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

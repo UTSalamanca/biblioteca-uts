@@ -23,7 +23,7 @@ const register_deleteSwal = (title, coloca, text, icon, rute) => {
         .then(function (result) {
             if (result.isConfirmed) {
                 // Envía la colocación del registro a eliminar
-                location.href = rute + coloca
+                location.href = '/' + rute + coloca
             }
         })
 }
@@ -56,7 +56,7 @@ const renew_again = (rute, cve_prestamo, cantidad, entrega) => {
     }).then((result) => {
         if (result.isConfirmed) {
             // Swal.fire(`Usted seleccionó: ${inputOptions[result.value]}`);
-            location.href = rute + cve_prestamo + '/' + result.value + '/' + entrega
+            location.href = '/' + rute + cve_prestamo + '/' + result.value + '/' + entrega
         }
     });
 };
@@ -103,8 +103,7 @@ const register_entrega = (cve_prestamo, text, btn, btn_color, icon, rute, entreg
     })
         .then(function (result) {
             if (result.isConfirmed) {
-                // Se envia la información a la ruta destinada para las acciones
-                location.href = rute + cve_prestamo + '/' + entrega
+                location.href = '/' + rute + cve_prestamo + '/' + entrega
             }
         }); 
 }

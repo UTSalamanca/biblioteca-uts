@@ -1,6 +1,4 @@
-from sito.models import Persona, Alumno, AlumnoClase, AlumnoGrupo, Grupo, GrupoSeguridad
-from static.utils import dd
-import json
+from sito.models import Persona, AlumnoClase, AlumnoGrupo, Grupo
 
 def persona(request):
    user = request.user
@@ -9,6 +7,19 @@ def persona(request):
         return {'persona': persona}
    else:
         return {'persona': ''}
+
+def grupo_alumno(request):
+    user = request.user
+    # Obtiene el listado de cve_grupo del alumno
+    try:
+        alumno_grupo = AlumnoGrupo.objects.filter(matricula=user.login).values_list('cve_grupo', flat=True)
+        # Selecciona el ultimo en el que se ha registrado
+        cve_grupo = alumno_grupo[len(alumno_grupo) - 1]
+        # Realiza la busqueda del grupo con el cve_grupo
+        grupo = Grupo.objects.get(cve_grupo=cve_grupo)
+        return { 'grupo_abrev': grupo.nombre }
+    except:
+        return { 'grupo_abrev': '' }
 
 def iniciales_nombre(request):
    user = request.user

@@ -28,19 +28,21 @@
                             <div class="text-center">
                                 <img id="logoImgUts" src="{% static 'img/Logo-UTS.png' %}" alt="logo">
                                 <h4 class="text-bold">Biblioteca Digital</h4>
-                                <h5>¡Bienvenido!</h5>
                             </div>
                             <form class="form mt-1" method="post">
                                 {% csrf_token %}
                                 <div class="wrap-input100">
-                                    <input class="input100" type="text" name="login" placeholder="Matricula">
+                                    <input class="input100" type="text" name="login" 
+                                        placeholder="Nombre de usuario (matrícula o número de empleado)" 
+                                        aria-label="Nombre de usuario" 
+                                        autocomplete="off">
                                     <span class="focus-input100"></span>
                                     <span class="symbol-input100">
                                         <i class="fa fa-envelope" aria-hidden="true"></i>
                                     </span>
                                 </div>
                                 <div class="wrap-input100">
-                                    <input class="input100" type="password" name="password" placeholder="Contraseña">
+                                    <input class="input100" type="password" name="password" placeholder="Contraseña" aria-label="Contraseña" autocomplete="off">
                                     <span class="focus-input100"></span>
                                     <span class="symbol-input100">
                                         <i class="fa fa-lock" aria-hidden="true"></i>
@@ -48,7 +50,7 @@
                                 </div>
                                 <div class="container-login100-form-btn">
                                     <button type="submit" class="login100-form-btn">
-                                        Ingresar
+                                        Iniciar Sesión
                                     </button>
                                 </div>
                             </form>

@@ -24,6 +24,24 @@
     border: 1px solid #ccc;
 }
 
-table.dataTable td, th {
-    font-size: 0.9rem;
+.table td, th {
+    font-size: 0.8rem;
+}
+
+#proyectos #modal_registro #header_card {
+    background-color: #0a3d62 !important;
+}
+
+#paginator .page-link {
+    font-size: 0.8rem;
+    color: black;
+}
+
+#proyectos #custom-search-input button {
+    background-color: #3c6382;
+    color: #fff;
+}
+
+#proyectos #select_tabs {
+    max-width: 5rem;
 }

@@ -1,6 +1,5 @@
 from django import forms
 from .models import model_estadias
-from static.helpers import dd
 
 class estadias_form(forms.ModelForm):
 
@@ -23,7 +22,6 @@ class estadias_form(forms.ModelForm):
     proyecto = forms.CharField(label='Proyecto', required=True, max_length=255, widget=forms.TextInput (attrs={'class':'form-control focusNext','placeholder':'Ingrese el nombre del proyecto', 'tabindex':'1'}))
     matricula = forms.IntegerField(label='Matricula', required=True, widget=forms.NumberInput (attrs={'class':'form-control focusNext','placeholder':'Ingrese la matricula del alumno', 'tabindex':'2'}))
     alumno = forms.CharField(label='Alumno', required=False, max_length=255, widget=forms.TextInput (attrs={'class':'form-control','placeholder':'Ingrese el nombre del alumno', 'readonly':True}))
-    asesor_academico = forms.CharField(label='Asesor académico', required=False, max_length=255, widget=forms.TextInput (attrs={'class':'form-control','placeholder':'Nombre del asesor académico', 'readonly':True}))
     generacion = forms.CharField(label='Generación', required=True, max_length=255, widget=forms.TextInput (attrs={'class':'form-control focusNext','placeholder':'Indique la generación', 'tabindex':'3'}))
     empresa = forms.CharField(label='Empresa', required=True, max_length=255, widget=forms.TextInput (attrs={'class':'form-control focusNext','placeholder':'Ingrese el nombre de la empresa', 'tabindex':'4'}))
     asesor_orga = forms.CharField(label='Asesor Institucional', required=False, max_length=255, widget=forms.TextInput (attrs={'class':'form-control focusNext','placeholder':'Ingrese el asesor organizacional', 'tabindex':'5'}))

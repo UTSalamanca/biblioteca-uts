@@ -44,10 +44,10 @@ def groups_required(*group_names):
                     return view_func(request, *args, **kwargs)
                 else:
                     messages.add_message(request, messages.INFO, 'No tienes permisos para entrar')
-                    return redirect('inicio')
+                    return redirect('inicio:inicio')
             except Exception as e:
                 print(f"Error en el decorador groups_required: {e}")
                 messages.add_message(request, messages.ERROR, 'Ha ocurrido un error al verificar tus permisos')
-                return redirect('inicio')
+                return redirect('inicio:inicio')
         return _wrapped_view
     return decorator
