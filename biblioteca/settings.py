@@ -212,11 +212,11 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # Deshabilita el límite
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
-LOGIN_URL = '/usuario/login/' # Cambia a la URL de tu vista personalizada.
+LOGIN_URL = '/login/' # Cambia a la URL de tu vista personalizada.
 LOGIN_REDIRECT_URL = '/inicio/'  # Define a dónde redirigir tras un login exitoso.
 # LOGOUT_REDIRECT_URL = '/usuario/login/'  # Define a dónde redirigir tras cerrar sesión (opcional).
 
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.office365.com'
 # EMAIL_PORT = 587

@@ -1,7 +1,18 @@
 window.onload = function () {
-    $('#loaderID').fadeOut()
-    $('#bodyMaster').removeClass('loaderHidden')
+    $('#loaderID').fadeOut('slow', function () {
+        $('#bodyMaster').removeClass('loaderHidden');
+    });
 }
+
+$(document).ajaxStart(function () {
+    $('#loaderID').fadeIn(); // Muestra el loader
+    $('#bodyMaster').addClass('loaderHidden'); // Bloquea scroll si quieres
+});
+
+$(document).ajaxStop(function () {
+    $('#loaderID').fadeOut(); // Oculta el loader
+    $('#bodyMaster').removeClass('loaderHidden'); // Reactiva scroll
+});
 
 // Custom
 // var customElement = $("<div>", {
