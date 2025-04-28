@@ -258,7 +258,7 @@ def prestamo_registro(request):
             form = catalogo_form(request.POST)
             if form.is_valid():
                 # Se obtiene el número de libros existentes
-                exist_book = acervo_model.objects.filter(titulo=form.cleaned_data['nom_libro'], colocacion=form.cleaned_data['colocacion']).first()
+                exist_book = acervo_model.objects.filter(formato=form.cleaned_data['formatoejem'], colocacion=form.cleaned_data['colocacion']).first()
                 if exist_book:
                     if exist_book.cant > 0:
                         if form.cleaned_data['cantidad_i'] < 0:
@@ -274,6 +274,7 @@ def prestamo_registro(request):
                         nom_autor = form.cleaned_data['nom_autor']
                         edicion = form.cleaned_data['edicion']
                         colocacion = form.cleaned_data['colocacion']
+                        formatoejem = form.cleaned_data['formatoejem']
                         cantidad_i = form.cleaned_data['cantidad_i']
                         cantidad_m = form.cleaned_data['cantidad_i']
                         matricula = form.cleaned_data['matricula']
@@ -289,6 +290,7 @@ def prestamo_registro(request):
                                 nom_autor = nom_autor,
                                 edicion = edicion,
                                 colocacion = colocacion,
+                                formatoejem = formatoejem,
                                 cantidad_i = cantidad_i,
                                 cantidad_m = cantidad_m,
                                 matricula = matricula,
@@ -323,7 +325,9 @@ def prestamo_registro(request):
             messages.add_message(request, messages.ERROR, '¡Algo salio mal!')
             return redirect('catalogo:catalogo')
     except Exception as p:
-        return HttpResponse("¡El proceso no se pudo realizar!", status=400)
+        messages.add_message(request, messages.ERROR, '¡Algo salio mal!\nContacte al departamento de TI')
+        return redirect('catalogo:catalogo')
+        # return HttpResponse("¡El proceso no se pudo realizar!", status=400)
 
 # Función para convertir documento a base64
 @groups_required('Biblioteca')
@@ -493,7 +497,7 @@ def book_delivered(request, cve, entrega):
             # Se realiza la disminución de la cantidad en el acervo (si se corrige el estado)
             if entrega == 'Entregado':
                 # Se actualizan los campos necesario en el registro de prestamos
-                ref_catalogo = acervo_model.objects.filter(titulo=book.nom_libro, colocacion=book.colocacion).first()
+                ref_catalogo = acervo_model.objects.filter(formato=book.formatoejem, colocacion=book.colocacion).first()
                 if ref_catalogo:
                     ref_catalogo.cant = ref_catalogo.cant + book.cantidad_m
                     ref_catalogo.save()
@@ -635,7 +639,7 @@ def renew_again(request, cve, cant, entrega):
                     if cant < book.cantidad_m:
                         diferencia = book.cantidad_m - cant
                         # Se obtiene la referencia del libro en el acervo
-                        ref_catalogo = acervo_model.objects.filter(titulo=book.nom_libro, colocacion=book.colocacion).first()
+                        ref_catalogo = acervo_model.objects.filter(formato=book.formatoejem, colocacion=book.colocacion).first()
                         if ref_catalogo:
                             # Se aumenta la diferencia en la cantidad total
                             ref_catalogo.cant = ref_catalogo.cant + diferencia
@@ -648,7 +652,7 @@ def renew_again(request, cve, cant, entrega):
                 else:
 
                     # Se obtiene la referencia del libro en el acervo
-                    ref_catalogo = acervo_model.objects.filter(titulo=book.nom_libro, colocacion=book.colocacion).first()
+                    ref_catalogo = acervo_model.objects.filter(formato=book.formatoejem, colocacion=book.colocacion).first()
                     if ref_catalogo:
                         # Se aumenta la diferencia en la cantidad total
                         if cant > ref_catalogo.cant:
@@ -681,7 +685,7 @@ def renew_again(request, cve, cant, entrega):
         messages.add_message(request, messages.ERROR, 'No se pudo realizar la acción')
         return redirect('catalogo:prestamos_View')
 
-# Llega petición ajax, busqueda de cantidad por titulo y colocación
+# Llega petición ajax, busqueda de cantidad por formato y colocación
 def cant_for_search(request):
     """Busca ejemplar en el acervo
     Args:
@@ -691,9 +695,9 @@ def cant_for_search(request):
         array: Información filtrada de la cantidad de ejemplares
     """
     try:
-        get_titulo = request.GET['titulo']
+        get_formatoejem = request.GET['formatoejem']
         get_colocacion = request.GET['colocacion']
-        exist_element = acervo_model.objects.filter(titulo=get_titulo, colocacion=get_colocacion).first()
+        exist_element = acervo_model.objects.filter(formato=get_formatoejem, colocacion=get_colocacion).first()
         if exist_element:
             return JsonResponse({'status': 'success', 'cantidad': exist_element.cant})
         else:

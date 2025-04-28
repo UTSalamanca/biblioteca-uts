@@ -13,6 +13,8 @@ $(document).ready(function() {
         $('input[name=nom_autor]').val(data.autor);
         $('input[name=edicion]').val(data.edicion);
         $('input[name=colocacion]').val(data.colocacion);
+        $('input[name=formatoejem]').val(data.formatoejem);
+        
     });
     
     // Función para el borrado de elementos
@@ -60,6 +62,7 @@ $(document).ready(function() {
             titulo = $('input[name=nom_libro]').val(),
             nom_alumno = $('input[name=nom_alumno]').val(),
             colocacion = $('input[name=colocacion]').val(),
+            formatoejem = $('input[name=formatoejem]').val(),
             cantidad = $('input[name=cantidad_i]').val(),
             carrera_grupo = $('input[name=carrera_grupo]').val();
          // Obliga a esperar que la información este completa
@@ -74,7 +77,7 @@ $(document).ready(function() {
         else {
             event.preventDefault();
             data = {
-                "titulo": titulo,
+                "formatoejem": formatoejem,
                 "colocacion": colocacion,
             }
             $.ajax({
@@ -109,6 +112,7 @@ $(document).ready(function() {
         $('input[name=edicion]').val('');
         $('input[name=colocacion]').val('');
         $('input[name=cantidad]').val('');
+        $('input[name=formatoejem]').val('');
         $('#defult_in_portada').attr("style","display:block");
         $('#content_portada').attr("style","display:none");
         $('#content_portada').removeAttr("src");
@@ -117,4 +121,8 @@ $(document).ready(function() {
     // Función para realizar salto de input con tecla Enter
     tabIndex_form('modal_catalogo', true);
 
+    $('#tbl_registroP').submit(function (event) {
+        console.log('llega');
+        
+    })
 });

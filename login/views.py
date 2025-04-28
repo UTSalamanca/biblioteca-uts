@@ -49,6 +49,9 @@ def enviar_codigo_verificacion(request, usuario):
 
     return True
 
+def session_expiret(request):
+    return render(request, 'login/alert_expiret.html')
+
 def login_view(request):
     # Si la sesión tiene un código de verificación redirigir a la vista de verificación
     if request.session.get('codigo_verificacion'):

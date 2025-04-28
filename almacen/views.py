@@ -67,7 +67,7 @@ def index_acervo(request):
 
 @groups_required('Biblioteca')
 def get_match(request):
-    """Función para la busqueda de coincidencias en el acervo
+    """Función para la busqueda de coincidencias en actualiación de registros
 
     Args:
         request (object): objeto de HTTP
@@ -76,7 +76,32 @@ def get_match(request):
         integer: 0 => Sin coincidencia, 1 => Coincidencia
     """
     try:
-        acervo_exist = acervo_model.objects.filter(colocacion=request.GET['col'], formato=request.GET['format'])
+        acervo_exist = acervo_model.objects.filter(
+            colocacion=request.GET['col'], 
+            formato=request.GET['format']
+            ).exclude(id=request.GET['id'])  # Excluye el actual registro para permitir la actualización
+        respuesta = 0
+        if acervo_exist.exists():
+            respuesta = 1
+        return JsonResponse({'respuesta': respuesta})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
+@groups_required('Biblioteca')
+def get_register(request):
+    """Función para la busqueda de coincidencias para nuevos registro en acervo
+
+    Args:
+        request (object): objeto de HTTP
+
+    Returns:
+        integer: 0 => Sin coincidencia, 1 => Coincidencia
+    """
+    try:
+        acervo_exist = acervo_model.objects.filter(
+            colocacion=request.GET['col'], 
+            formato=request.GET['format']
+            )
         respuesta = 0
         if acervo_exist.exists():
             respuesta = 1
@@ -186,7 +211,9 @@ def edit_acervo(request):
     """
     if request.method == 'POST':
         form = registro_form(request.POST)
+        print('llega edit_acervo')
         if form.is_valid():
+            print(form.cleaned_data['id'])
             # Verifica que no exista un duplicado con la misma colocación y formato
             duplicado = acervo_model.objects.filter(
                 colocacion=form.cleaned_data['colocacion'], 

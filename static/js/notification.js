@@ -55,6 +55,7 @@ const renew_again = (rute, cve_prestamo, cantidad, entrega) => {
         }
     }).then((result) => {
         if (result.isConfirmed) {
+            $.LoadingOverlay("show");
             // Swal.fire(`Usted seleccionó: ${inputOptions[result.value]}`);
             location.href = '/' + rute + cve_prestamo + '/' + result.value + '/' + entrega
         }
@@ -103,6 +104,7 @@ const register_entrega = (cve_prestamo, text, btn, btn_color, icon, rute, entreg
     })
         .then(function (result) {
             if (result.isConfirmed) {
+                $.LoadingOverlay("show");
                 location.href = '/' + rute + cve_prestamo + '/' + entrega
             }
         }); 

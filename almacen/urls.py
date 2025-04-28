@@ -12,4 +12,5 @@ urlpatterns = [
     path('edit_register/<col>', login_required(views.edit_register), name='edit_register'),
     path('edit_acervo/', login_required(views.edit_acervo), name='edit_acervo'),
     path('get_match/', login_required(views.get_match), name='get_match'),
+    path('get_register/', login_required(views.get_register), name='get_register'),
 ]

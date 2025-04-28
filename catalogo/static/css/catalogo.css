@@ -76,9 +76,7 @@
 #carga_portada .card #btn_search_portada {
     background-color: #0a3d62; 
     color: #fff;
-    height: 70%;
     margin-left: 0.5rem;
-    margin-top: 2rem;
 }
 
 #paginator .page-link {

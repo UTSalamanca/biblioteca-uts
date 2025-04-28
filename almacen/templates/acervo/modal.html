@@ -9,7 +9,7 @@
                         <h3 class="card-title" id="title_modal">Nueva adquisición</h3>
                     </div>
                     <div class="card-body">
-                        <form action="{% url 'acervo:acervo_registro' %}" id="tbl_addBook" method="POST">
+                        <form id="tbl_addBook" method="POST">
                             {% csrf_token %}
                             {{ form.id }}
                             <label class="text-muted" for="title">Titulo</label>

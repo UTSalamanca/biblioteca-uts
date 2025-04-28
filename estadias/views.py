@@ -145,19 +145,19 @@ def estadias_registro(request):
                 fecha_registro = now().replace(microsecond=0)
 
                 # Crear registro
-                model_estadias.objects.create(
-                    proyecto=proyecto,
-                    matricula=matricula,
-                    alumno=alumno,
-                    asesor_academico=asesor_academico,
-                    generacion=generacion,
-                    empresa=empresa,
-                    asesor_orga=asesor_orga,
-                    carrera=carrera,
-                    reporte=name_ref,
-                    base64=base64_file,
-                    fecha_registro=fecha_registro
-                )
+                estadias = model_estadias.objects.create(
+                            proyecto=proyecto,
+                            matricula=matricula,
+                            alumno=alumno,
+                            asesor_academico=asesor_academico,
+                            generacion=generacion,
+                            empresa=empresa,
+                            asesor_orga=asesor_orga,
+                            carrera=carrera,
+                            reporte=name_ref,
+                            base64=base64_file,
+                            fecha_registro=fecha_registro
+                        )
                 messages.add_message(request, messages.SUCCESS, 'Registro agregado correctamente')
                 return redirect('estadias:proyectos')
             else:
@@ -309,8 +309,10 @@ def get_alumno(request):
         array: Información encontrada del alumno
     """
     matricula = request.GET.get('matricula')
-    print(matricula)
     if matricula:
+        existe_alumno = Alumno.objects.filter(matricula=matricula)
+        if not existe_alumno.exists():
+            return JsonResponse({'error': 1})
         cve_persona = ''
         try:
             # alumno_grupo = get_object_or_404(AlumnoGrupo, matricula=matricula)

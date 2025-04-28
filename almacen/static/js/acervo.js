@@ -170,22 +170,6 @@ $(document).ready(function () {
         register_deleteSwal(title, coloca, text, icon, rute)
     })
 
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
     // Función para edición
     $('#acervoTable').on('click', 'tbody #info_data td a#edit_register', function () {
         // Se obtiene la información de la tabla
@@ -223,7 +207,6 @@ $(document).ready(function () {
         $('input[name="' + input_id[8] + '"]').val(moreInfo['adqui']) //Campo tipo de adquisición
         $('select[name="' + input_id[9] + '"]').val(decode_val[moreInfo['state']]) // Campo estado
         $('input[name="' + input_id[10] + '"]').val(moreInfo['id']) // Campo Clave
-        $('#acervo_add #tbl_addBook').attr('action', '/edit_acervo/')
         // Se abre el modal al final de la asignación de valores en los inputs
         modal_inputs.modal('show')
         $('#acervo_add #btnModalSend').attr('style', 'display: none')
@@ -234,30 +217,49 @@ $(document).ready(function () {
         modal_inputs.on('hidden.bs.modal', function () {
             for (let i = 0; i < 10; i++) {
                 if (i != 7 && i != 9) {
-                    // $('#tbl_addBook #' + input_id[i])[0].value = ''
                     $('input[name="' + input_id[i] + '"]').val('')
                 }
-                //$('#tbl_addBook #' + input_id[7])[0].value = 'book'
                 $('select[name="' + input_id[7] + '"]').val('Libro')
-                //$('#tbl_addBook #' + input_id[9])[0].value = 'EXC'
                 $('select[name="' + input_id[9] + '"]').val('Excelente')
                 $('#acervo_add #btnModalUpdate').attr('style', 'display: none;')
                 $('#acervo_add #btnModalDelete').attr('style', 'display: none;')
                 $('#acervo_add #btnModalSend').removeAttr('style', 'display: none;')
-                $('#acervo_add #tbl_addBook').attr('action', '/acervo_registro/')
                 $('#acervo_add #title_modal').text('Nueva adquisición')
             }
         })
     });
 
     // Control de inserciones
-    $('#btnModalSend, #btnModalUpdate').on('click', function (event) {
+    $('#btnModalSend').on('click', function (event) {
         if ($('input[name="cant"]').val() <= 0) {
             event.preventDefault();
             process('¡Debes ingresar una cantidad mayor a 0!');
         };
+        data = {
+            'col': $('input[name=colocacion]').val(),
+            'format': $('select[name=formato]').val()
+        }
+        $.ajax({
+            url: '/acervo/get_register/',
+            data: data,
+            type: 'GET',
+            success: function (response) {
+                if (response['respuesta'] == 1) {
+                    event.preventDefault();
+                    process('¡Ya existe un elemento con esta colocación!');
+                } else {
+                    $('#acervo_add #tbl_addBook').attr('action', "/acervo/acervo_registro/")
+                    $('#tbl_addBook').submit();
+                }
+            },
+            error: function (error) { console.log(error); }
+        });
+    });
+
+    $('#btnModalUpdate').on('click', function (event) {
         // Busca que no exista un ejemplar igual
         data = {
+            'id': $('input[name=id]').val(),
             'col': $('input[name=colocacion]').val(),
             'format': $('select[name=formato]').val()
         }
@@ -270,6 +272,7 @@ $(document).ready(function () {
                     event.preventDefault();
                     process('¡Ya existe un elemento con esta colocación!');
                 } else {
+                    $('#acervo_add #tbl_addBook').attr('action', "/acervo/edit_acervo/")
                     $('#tbl_addBook').submit();
                 }
             },
@@ -291,7 +294,11 @@ $(document).ready(function () {
     $('#select_tabs').on('change', function() {
         $('#form_tab_select').submit();
     });
-    
+
+    // Acciones a realiar cuando el modal se cierra
+    $('#acervo_add').on('hidden.bs.modal', function () {
+        $('#tbl_addBook').removeAttr('action');
+    });
     // Función para realizar salto de input con Enter
     tabIndex_form('acervo_add');
 })

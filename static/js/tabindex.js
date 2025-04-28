@@ -41,19 +41,8 @@ const tabIndex_form = (modal, btn_search = false) => {
               
                 // Si encontramos un elemento 
                 if (next) {
-                    if (btn_search) {
-                        if (tabIndex == 3) {
-                            $('#btn_search_matricula').click();
-                            let dato_alumno;
-                            // Realiza un ciclo de busqueda
-                            do {
-                                dato_alumno = $('input[name=alumno]').val();
-                                sleepES5(3000);
-                            } while (dato_alumno != '');
-                        }
-                    }
                     next.focus();
-                    event.preventDefault();
+                    evt.preventDefault();
                 }
             });
         });
