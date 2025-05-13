@@ -4,9 +4,9 @@
 {% endblock %}
 <aside class="main-sidebar main-sidebar-custom sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="{% url 'inicio' %}" class="brand-link">
-        <img src="{% static 'img/utsLogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
-            style="opacity: .8">
+    <a href="{% url 'inicio:inicio' %}" class="brand-link">
+        <img src="{% static 'img/utsLogo.png' %}" alt="AdminLTE Logo" class="brand-image"
+            style="width: 55px; height: 100%;">
         <span class="brand-text font-weight-light">BibliotecaDigital</span>
     </a>
     
@@ -29,9 +29,9 @@
            with font-awesome or any other icon font library -->
                 <li class="nav-item">
                     {% if data.side_code == 100 %}
-                    <a href="{% url 'inicio' %}" class="nav-link active">
+                    <a href="{% url 'inicio:inicio' %}" class="nav-link active">
                         {% else %}
-                        <a href="{% url 'inicio' %}" class="nav-link">
+                        <a href="{% url 'inicio:inicio' %}" class="nav-link">
                             {% endif %}
                             <i class="nav-icon fas fa-home"></i>
                             <p>
@@ -40,12 +40,12 @@
                         </a>
                 </li>
                 <!-- Sección de Acervo -->
-                {% if 'Administrador' in grupo_control %}
+                {% if 'Biblioteca' in grupo_control %}
                 <li class="nav-item">
                     {% if side_code == 200 %}
-                    <a href="{% url 'acervo' %}" class="nav-link active">
+                    <a href="{% url 'acervo:acervo' %}" class="nav-link active">
                         {% else %}
-                        <a href="{% url 'acervo' %}" class="nav-link">
+                        <a href="{% url 'acervo:acervo' %}" class="nav-link">
                             {% endif %}
                             <i class="nav-icon fas fa-warehouse"></i>
                             <p>
@@ -70,9 +70,9 @@
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
                                 {% if side_code == 400 %}
-                                <a href="{% url 'catalago' %}" class="nav-link active">
+                                <a href="{% url 'catalogo:catalago' %}" class="nav-link active">
                                     {% else %}
-                                    <a href="{% url 'catalago' %}" class="nav-link">
+                                    <a href="{% url 'catalogo:catalago' %}" class="nav-link">
                                         {% endif %}
                                         <i class="nav-icon fas fa-book"></i>
                                         <p>Catálogo</p>
@@ -80,35 +80,35 @@
                             </li>
                             <li class="nav-item">
                                 {% if side_code == 403 %}
-                                <a href="{% url 'prestamos_usuario' %}" class="nav-link active">
+                                <a href="{% url 'catalogo:prestamos_usuario' %}" class="nav-link active">
                                     {% else %}
-                                    <a href="{% url 'prestamos_usuario' %}" class="nav-link">
+                                    <a href="{% url 'catalogo:prestamos_usuario' %}" class="nav-link">
                                         {% endif %}
                                         <i class="nav-icon fas fa-list-ul"></i>
-                                        <p>Préstamos solicitados</p>
+                                        <p>Mis prestamos</p>
                                     </a>
                             </li>
-                            {% if 'Administrador' in grupo_control %}
-                            <li class="nav-item">
-                                {% if side_code == 401 %}
-                                <a href="{% url 'prestamos_View' %}" class="nav-link active">
-                                    {% else %}
-                                    <a href="{% url 'prestamos_View' %}" class="nav-link">
-                                        {% endif %}
-                                        <i class="nav-icon fas fa-clipboard-list"></i>
-                                        <p>Registro de préstamos</p>
-                                    </a>
-                            </li>
-                            <li class="nav-item">
-                                {% if side_code == 402 %}
-                                <a href="{% url 'cargar_portada' %}" class="nav-link active">
-                                    {% else %}
-                                    <a href="{% url 'cargar_portada' %}" class="nav-link">
-                                        {% endif %}
-                                        <i class="nav-icon fas fa-file-upload"></i>
-                                        <p>Cargar portada</p>
-                                    </a>
-                            </li>
+                            {% if 'Biblioteca' in grupo_control %}
+                                <li class="nav-item">
+                                    {% if side_code == 401 %}
+                                    <a href="{% url 'catalogo:prestamos_View' %}" class="nav-link active">
+                                        {% else %}
+                                        <a href="{% url 'catalogo:prestamos_View' %}" class="nav-link">
+                                            {% endif %}
+                                            <i class="nav-icon fas fa-clipboard-list"></i>
+                                            <p>Registro de préstamos</p>
+                                        </a>
+                                </li>
+                                <li class="nav-item">
+                                    {% if side_code == 402 %}
+                                    <a href="{% url 'catalogo:cargar_portada' %}" class="nav-link active">
+                                        {% else %}
+                                        <a href="{% url 'catalogo:cargar_portada' %}" class="nav-link">
+                                            {% endif %}
+                                            <i class="nav-icon fas fa-file-upload"></i>
+                                            <p>Cargar portada</p>
+                                        </a>
+                                </li>
                             {% endif %}
                         </ul>
                 </li>
@@ -128,9 +128,9 @@
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
                                 {% if side_code == 300 or side_code == 301 %}
-                                <a href="{% url 'proyectos' %}" class="nav-link active">
+                                <a href="{% url 'estadias:proyectos' %}" class="nav-link active">
                                     {% else %}
-                                    <a href="{% url 'proyectos' %}" class="nav-link">
+                                    <a href="{% url 'estadias:proyectos' %}" class="nav-link">
                                         {% endif %}
                                         <i class="nav-icon fas fa-file-alt"></i>
                                         <p>Proyectos</p>

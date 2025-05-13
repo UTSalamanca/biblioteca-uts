@@ -7,7 +7,6 @@ from django.http import HttpResponse
 from django.utils.deprecation import MiddlewareMixin
 from static.exceptions import DebugException
 from django.contrib.messages import constants as messages
-from static.utils import dd
 
 class DebugMiddleware(MiddlewareMixin):
     def process_exception(self, request, exception):
@@ -107,7 +106,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # O SESSION_SECURITY_INSECURE = True
 
 SESSION_SECURITY_WARN_AFTER = 50  # Número de segundos antes de mostrar una advertencia de inactividad
 
-SESSION_SECURITY_EXPIRE_AFTER = 1200  # Número de segundos antes de expirar la sesión por inactividad
+SESSION_SECURITY_EXPIRE_AFTER = 1800  # Número de segundos antes de expirar la sesión por inactividad 1200
 
 ROOT_URLCONF = 'biblioteca.urls'
 
@@ -127,6 +126,7 @@ TEMPLATES = [
                 'static.context_processors.user_permissions_and_groups',
                 'static.context_processors.group_permission',
                 'static.context_processors.get_alumnos_clase',
+                'static.context_processors.grupo_alumno',
             ],
         },
     },
@@ -212,6 +212,15 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # Deshabilita el límite
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
-# LOGIN_URL = '/login_user/' # Cambia a la URL de tu vista personalizada.
-# LOGIN_REDIRECT_URL = '/'  # Define a dónde redirigir tras un login exitoso.
-# LOGOUT_REDIRECT_URL = 'login_user/'  # Define a dónde redirigir tras cerrar sesión (opcional).
+LOGIN_URL = '/login/' # Cambia a la URL de tu vista personalizada.
+LOGIN_REDIRECT_URL = '/inicio/'  # Define a dónde redirigir tras un login exitoso.
+# LOGOUT_REDIRECT_URL = '/usuario/login/'  # Define a dónde redirigir tras cerrar sesión (opcional).
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.office365.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'tu_correo@outlook.com'
+# EMAIL_HOST_PASSWORD = 'tu_contraseña'
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

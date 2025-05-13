@@ -1,0 +1,146 @@
+{% load static %}
+<!-- Modal de registro de libros -->
+<div class="modal fade" id="acervo_add" data-bs-backdrop="static" tabindex="-1" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-header" style="background-color: #0a3d62; color: #fff;">
+                        <h3 class="card-title" id="title_modal">Nueva adquisición</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="tbl_addBook" method="POST">
+                            {% csrf_token %}
+                            {{ form.id }}
+                            <label class="text-muted" for="title">Titulo</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                                </div>
+                                {{ form.titulo }}
+                            </div>
+                            <label class="text-muted" for="autor">Autor</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-feather-alt"></i></span>
+                                </div>
+                                {{ form.autor }}
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-6">
+                                    <label class="text-muted" for="edito">Editorial</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-user-edit"></i></span>
+                                        </div>
+                                        {{ form.editorial }}
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <label class="text-muted" for="anio">Año de edición</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                        </div>
+                                        {{ form.anio }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-6">
+                                    <label class="text-muted" for="edic">Edición</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-newspaper"></i></span>
+                                        </div>
+                                        {{ form.edicion }}
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <label class="text-muted" for="cant">Cantidad</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-boxes"></i></span>
+                                        </div>
+                                        {{ form.cant }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-6">
+                                    <label class="text-muted" for="coloca">Colocación</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-wave-square"></i></span>
+                                        </div>
+                                        {{ form.colocacion }}
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <label class="text-muted" for="formato">Formato</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-book fa-xs"></i>/<i class="fas fa-compact-disc fa-xs"></i></span>
+                                        </div>
+                                        {{ form.formato }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-6">
+                                    <label class="text-muted" for="typeAdq">Tipo de adquisición</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-shopping-cart"></i></span>
+                                        </div>
+                                        {{ form.adqui }}
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <label class="text-muted" for="typeAdq">Estado</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-eye"></i></span>
+                                        </div>
+                                        {{ form.estado }}
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn float-right ml-1" id="btnModalSend">Agregar</button>
+                            <button type="button" class="btn float-right ml-1" id="btnModalUpdate"
+                                style="display: none;">Guardar cambios</button>
+                            <button type="button" class="btn btn-danger float-right ml-1"
+                                    id="btnModalDelete" style="display: none;">Eliminar registro</button>
+                            <button type="button" class="btn btn-default float-right"
+                                data-bs-dismiss="modal">Cancelar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="more_info_modal">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #0a3d62; color: #fff;">
+                <h4 class="modal-title">Más información</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xl-8">
+                        <div id="show_more"></div>
+                    </div>
+                    <div class="col-xl-4">
+                        <div class="text-center">
+                            <img alt="portada_libro" id="content_portada" class="img-fluid" style="max-width: 80%; height: auto; display: none;">
+                            <img alt="portada_libro" src="{% static 'img/portada_default.png' %}" id="content_portada_default" class="img-fluid" style="max-width: 80%; height: auto; display: block;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

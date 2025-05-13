@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Inicio{% endblock %}
+{% block content %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/inicio.css' %}">
+{% endblock %}
+<!-- Content Header (Page header) -->
+<div id="home">
+    <section class="content-header align-content-center" id="bg_init" style="background-image: url('/static/img/fondo_biblioteca.webp');">
+        <img class="rounded mx-auto d-block" src="{% static 'img/fondo_biblioteca.jpg' %}" width="70%" alt="">
+    </section>
+</div>
+
+{% endblock %}

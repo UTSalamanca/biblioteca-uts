@@ -10,7 +10,7 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars text-white"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="{% url 'inicio' %}" class="nav-link text-white text-bold">Inicio</a>
+            <a href="{% url 'inicio:inicio' %}" class="nav-link text-white text-bold">Inicio</a>
         </li>
     </ul>
     <ul class="navbar-nav ml-auto">
@@ -29,7 +29,7 @@
                     <small class="text-wrap d-block text-center text-white">{{ persona }}</small>
                 </li>
                 <li>
-                    <a class="dropdown-item text-white text-center" href="{% url 'logout' %}">Cerrar sesión
+                    <a class="dropdown-item text-white text-center" href="{% url 'usuario:logout' %}">Cerrar sesión
                         <i class="fas fa-power-off"></i>
                     </a>
                 </li>

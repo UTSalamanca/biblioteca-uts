@@ -1,39 +1,4 @@
 $(document).ready(function() {
-    // Llama función para DataTable
-    datatable('catalogoTable', 0, 'asc');
-    datatable('prestamoTable');
-    datatable('prestamoTableAll', 8, 'desc', 10);
-    
-    //Buscar matricula
-    $('#modal_catalogo').on('shown.bs.modal', function () {
-        //let matricula = $('#id_matricula').val()
-        let matricula = $('#catalogoTable tbody tr').data('persona')
-        if (matricula != '') {
-            $('#msg_search').attr('style', 'display:block')
-            $.ajax({
-                url: '/get_personas_p/',
-                data: { "matricula": matricula },
-                type: 'GET',
-                success: function (response) {
-                    let nombre_completo = response['nombre'] 
-                                        + ' ' 
-                                        + response['apellido_paterno'] 
-                                        + ' ' 
-                                        + response['apellido_materno'];
-                    let carrera = response['nombre_grupo'];
-                    $('input[name=matricula').val(matricula);
-                    $('input[name=nom_alumno]').val(nombre_completo);
-                    $('input[name=carrera_grupo]').val(carrera);
-                },
-                error: function (error) {
-                    $('input[name=matricula]').val('');
-                    $('input[name=nom_alumno]').val('');
-                    $('input[name=carrera_grupo]').val('');
-                }
-            });
-        }
-    });
-    
     $('#catalogoTable').on('click', 'tbody tr td a#btnPedidoBook', function () {
         let data = $(this).closest('tr').data()
         let portada = 'data:image/png;base64,';
@@ -48,9 +13,10 @@ $(document).ready(function() {
         $('input[name=nom_autor]').val(data.autor);
         $('input[name=edicion]').val(data.edicion);
         $('input[name=colocacion]').val(data.colocacion);
+        $('input[name=formatoejem]').val(data.formatoejem);
+        
     });
     
-
     // Función para el borrado de elementos
     $('#prestamoTableAll').on('click', 'tbody td a#delivered', function (e) {
         let data = $(this).closest('#info_book').data();
@@ -61,7 +27,7 @@ $(document).ready(function() {
         let btn = entrega == "Proceso" ? "Marcar/entregado" : "Marcar/devuelto";
         let btn_color = entrega == "Proceso" ? "#28a745" : "#18632a";
         let icon = "question";
-        let rute = '/book_delivered/';
+        let rute = 'catalogo/book_delivered/';
         if (entrega == 'Devuelto') {
             process('¡Ya realizó este proceso!');
         }
@@ -84,7 +50,7 @@ $(document).ready(function() {
         // Validar si es posible eliminar
         let btn_color = "#28a745"; // Botón renovar
         let icon = "question";
-        let rute = '/renew_again/';
+        let rute = 'catalogo/renew_again/';
         // Llama el SweetAlert del script notification
         register_renew(cve_prestamo, title, btn, btn_color, icon, cantidad_i , cantidad_m, rute, entrega);
     });
@@ -96,6 +62,7 @@ $(document).ready(function() {
             titulo = $('input[name=nom_libro]').val(),
             nom_alumno = $('input[name=nom_alumno]').val(),
             colocacion = $('input[name=colocacion]').val(),
+            formatoejem = $('input[name=formatoejem]').val(),
             cantidad = $('input[name=cantidad_i]').val(),
             carrera_grupo = $('input[name=carrera_grupo]').val();
          // Obliga a esperar que la información este completa
@@ -110,11 +77,11 @@ $(document).ready(function() {
         else {
             event.preventDefault();
             data = {
-                "titulo": titulo,
+                "formatoejem": formatoejem,
                 "colocacion": colocacion,
             }
             $.ajax({
-                url: '/cant_for_search/',
+                url: 'cant_for_search/',
                 data: data,
                 type: 'GET',
                 success: function (response) {
@@ -131,6 +98,11 @@ $(document).ready(function() {
     
     })
     
+    // Manejo para cambio de tabs
+    $('#select_tabs').on('change', function() {
+        $('#form_tab_select').submit();
+    });
+
     $('#modal_catalogo').on('hidden.bs.modal', function () {
         $('#msg_search').attr('style', 'display:none');
         $('#msg_error').attr('style', 'display:none');
@@ -140,9 +112,7 @@ $(document).ready(function() {
         $('input[name=edicion]').val('');
         $('input[name=colocacion]').val('');
         $('input[name=cantidad]').val('');
-        $('input[name=matricula]').val('');
-        $('input[name=nom_alumno]').val('');
-        $('input[name=carrera_grupo]').val('');
+        $('input[name=formatoejem]').val('');
         $('#defult_in_portada').attr("style","display:block");
         $('#content_portada').attr("style","display:none");
         $('#content_portada').removeAttr("src");
@@ -151,4 +121,8 @@ $(document).ready(function() {
     // Función para realizar salto de input con tecla Enter
     tabIndex_form('modal_catalogo', true);
 
+    $('#tbl_registroP').submit(function (event) {
+        console.log('llega');
+        
+    })
 });

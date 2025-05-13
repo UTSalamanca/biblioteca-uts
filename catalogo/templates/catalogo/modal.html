@@ -1,0 +1,128 @@
+{% load static %}
+<!-- Modal de registro de proyectos de estadías-->
+<div class="modal fade" id="modal_catalogo" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="card">
+          <div class="card-header" style="background-color: #0a3d62; color: #fff;">
+            <h3 class="card-title">Solicitud de préstamo</h3>
+          </div>
+            <div class="card-body">
+                <form action="{% url 'catalogo:prestamo_registro' %}" method="POST" id="tbl_registroP">
+                  {% csrf_token %}
+                    <div class="row mb-2">
+                        <div class="col-xl-8">
+                          <span class="text-bold">Datos del ejemplar</span>
+                          <div class="border-top">
+                            <label class="text-muted" for="proyecto">Nombre</label>
+                            <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                              </div>
+                              {{ form.nom_libro }}
+                            </div>
+                            <div style="display: none;">
+                                {{ form.colocacion }}
+                            </div>
+                            <div style="display: none;">
+                              {{ form.formatoejem }}
+                            </div>
+                            <div class="row">
+                              <div class="col-xl-6">
+                                <label class="text-muted" for="edic">Nombre del Autor</label>
+                                <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-feather-alt"></i></span>
+                                  </div>
+                                  {{ form.nom_autor }}
+                                </div>
+                              </div>
+                              <div class="col-xl-6">
+                                <label class="text-muted" for="edito">Edición</label>
+                                <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-newspaper"></i></span>
+                                  </div>
+                                  {{ form.edicion }}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <span class="text-bold mt-3">Datos del solicitante</span>
+                          <div class="border-top">
+                            <div class="row">
+                              <div class="col-xl-6">
+                                <label class="text-muted" for="matricula">Identificador</label>
+                                <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                  </div>
+                                  <input type="text" name="matricula" value="{{ user }}" class="form-control" readonly>
+                                </div>
+                              </div>
+                              <div class="col-xl-6">
+                                <label class="text-muted" for="edito">Carrera</label>
+                                <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                  </div>
+                                  <input type="text" name="carrera_grupo" value="{{ grupo_abrev }}" class="form-control" readonly>
+                                </div>
+                              </div>
+                            </div>
+                            <label class="text-muted" for="edic">Nombre</label>
+                            <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                              </div>
+                              <input type="text" name="nom_alumno" value="{{ persona }}" class="form-control" readonly>
+                            </div>
+                          </div>
+                          <span class="text-bold">Datos del préstamo</span>
+                          <div class="border-top">
+                            <div class="row">
+                              <div class="col-xl-6">
+                                <label class="text-muted" for="edito">Cantidad</label>
+                                <div class="input-group mb-3">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-boxes"></i></span>
+                                  </div>
+                                  {{ form.cantidad_i }}
+                                </div>
+                              </div>
+                              <div class="col-xl-6">
+                                <label class="text-muted" for="formato">Tipo de Préstamo 
+                                  <i class="fas fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="{{data_prestamo}}">
+                                  </i>
+                                </label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-long-arrow-alt-up"></i><i class="fas fa-long-arrow-alt-down"></i></span>
+                                    </div>
+                                    {{ form.tipoP }}
+                                </div>
+                              </div>
+                            </div>
+                          </div>  
+                        </div>
+                        <div class="col-xl-4">
+                          <span class="text-bold">Portada</span>
+                          <div class="border-top mt-2">
+                            <img alt="portada" id="content_portada" class="img-fluid" style="max-width: 100%; height: auto; display:none;">
+                            <img alt="portada" src="{% static 'img/portada_default.png' %}" id="defult_in_portada" class="img-fluid" style="max-width: 100%; height: auto; display:block;">
+                          </div>
+                        </div>
+                    </div>
+                    <button type="submit" id="btnSendEstadias" class="btn float-right ml-1"
+                        style="background-color: #0a3d62; color: white">Solicitar préstamo</button>
+                    <button type="button" class="btn btn-default float-right" data-bs-dismiss="modal"
+                        id="close_modal_estadia">Cancelar</button>
+                </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

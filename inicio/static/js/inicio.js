@@ -1,6 +1,4 @@
-$(document).ready( function () {    
-    // Llama función para DataTable
-    datatable('tbl_prestamo_es', 3, 'desc', 3);
+$(document).ready( function () {
 
     // Creación de gráfica de pastel
     // Se obtienen los estados registrados
@@ -11,7 +9,7 @@ $(document).ready( function () {
                 type: 'pie'
             },
             title: {
-                text: 'Cantidad por estado del libro',
+                text: 'Cantidad por estado del ejemplar',
                 align: 'left'
             },
             accessibility: {
@@ -265,6 +263,15 @@ $(document).ready( function () {
             }
         ]
     });  
+
+    // Manda formulario para filtro por cantidad
+    $('#select_tabs').on('change', function() {
+        $('#form_tab_select').submit();
+    });
+    // Envia formulario para fltro por periodo
+    $('#periodo_opt').on('change', function() {
+        $('#form_per_select').submit();
+    });
 })
 
 function reportMensual() {
@@ -282,7 +289,7 @@ function reportMensual() {
     }).then(function (result) {
         if (result.isConfirmed) {
             // Envía la colocación del registro a eliminar
-            location.href = '/report/' + result.value
+            location.href = '/inicio/report/' + result.value
         }
     })
 }

@@ -14,7 +14,7 @@ def insert_header_image(sheet):
     Inserta una imagen de encabezado en la hoja del libro de Excel.
     """
     # Ruta de la imagen
-    imagen_path = os.path.join(settings.BASE_DIR, 'inicio', 'static', 'img', 'header_image_uts.jpg')
+    imagen_path = os.path.join(settings.BASE_DIR, 'inicio', 'static', 'img', 'header_new_uts.jpg')
 
     # Verifica si la imagen existe
     if not os.path.exists(imagen_path):
@@ -112,7 +112,7 @@ def table_acervo(sheet, data):
     # Agranda el tamaño de la celda A
     sheet.column_dimensions['A'].width = 10
     # Agranda el tamaño de la celda B
-    sheet.column_dimensions['B'].width = 25
+    sheet.column_dimensions['B'].width = 30
     sheet.merge_cells('B12:B13')
     sheet['B12'].border = get_borders('all')
     sheet['B13'].border = get_borders('all')
@@ -323,7 +323,7 @@ def table_acervo(sheet, data):
     sheet[f"F{new_cell + 2}"] = "NO.VOLUMENES"
     # Titulo 5
     sheet.merge_cells(f"G{new_cell + 1}:H{new_cell + 1}")
-    sheet[f"G{new_cell + 1}"] = "CD-ROM"    
+    sheet[f"G{new_cell + 1}"] = "REVISTAS"    
     # Titulo 5.1
     sheet[f"G{new_cell + 2}"] = "NO.TÍTULOS"
     sheet[f"H{new_cell + 2}"] = "NO.VOLUMENES"
@@ -415,9 +415,9 @@ def table_acervo(sheet, data):
     # Totalizador volumenes disco
     sheet[f"F{data_cell}"] = totalizador_disc1
     # Totalizador volumenes revista
-    sheet[f"G{data_cell}"] = totalizador_revist1
+    sheet[f"G{data_cell}"] = totalizador_revist2
     # Totalizador volumenes revista
-    sheet[f"H{data_cell}"] = totalizador_revist2
+    sheet[f"H{data_cell}"] = totalizador_revist1
         
 def table_reporte_estadias(sheet, data):
     """Función para la creación de la tabla de reportes de estadías
@@ -545,7 +545,7 @@ def table_reporte_estadias(sheet, data):
     # Nombre de proyecto
     sheet[f"B{new_cell}"] = "Nombre de proyecto"
     sheet[f"B{new_cell}"].alignment = centrado
-    sheet.column_dimensions['B'].width = 25
+    sheet.column_dimensions['B'].width = 30
     # Nombre de la carrea
     sheet[f"C{new_cell}"] = "Carrera relacionada"
     sheet[f"C{new_cell}"].alignment = centrado
@@ -619,7 +619,7 @@ def table_prestamos(sheet, data):
     # Agranda el tamaño de la celda A
     sheet.column_dimensions['A'].width = 10
     # Agranda el tamaño de la celda B
-    sheet.column_dimensions['B'].width = 25
+    sheet.column_dimensions['B'].width = 30
     sheet.merge_cells('B12:B13')
     sheet['B12'].border = get_borders('all')
     sheet['B13'].border = get_borders('all')

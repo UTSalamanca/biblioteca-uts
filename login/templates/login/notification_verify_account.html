@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificación de Código de Seguridad</title>
+    <link rel="icon" type="image/png" href="https://siesav.utsalamanca.edu.mx/media/images/Logo-UTS-2023.png">
+    <style>
+        /* Global styles */
+        body {
+            background-color: #f3f4f6;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Card styles */
+        .card-container {
+            max-width: 54rem;
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            background-color: #007CF2;
+            color: #ffffff;
+            text-align: center;
+            font-size: 1.95rem;
+            font-weight: bold;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .card-text {
+            font-size: 1rem;
+            color: #374151;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .card-highlight {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007CF2;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .card-image {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-image img {
+            width: 160px;
+            height: auto;
+        }
+
+        /* Footer styles */
+        .footer {
+            background-color: #f3f4f6;
+            padding: 1rem;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .footer img {
+            width: 6rem;
+            margin-top: 0.5rem;
+        }
+
+        .footer a {
+            text-decoration: none;
+            color: #007CF2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card-container">
+        <!-- Header -->
+        <div class="card-header">
+            SIESAV
+        </div>
+
+        <!-- Content -->
+        <div class="card-content">
+            <!-- Icon and Title -->
+            <div class="card-image">
+                <img src="{{MEDIA_URL}}/media/images/icons/encrypted.png" alt="Encrypted Icon">
+            </div>
+            <h2 class="card-title">Código de Seguridad</h2>
+
+            <!-- Message -->
+            <p class="card-text">
+                Hola, <strong>{{ usuario.nombre_completo }}</strong>
+            </p>
+            <p class="card-text">
+                Captura el siguiente código de seguridad en el sitio de SIESAV para continuar:
+            </p>
+
+            <!-- Security Code -->
+            <p class="card-highlight">
+                {{ codigo_verificacion }}
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Universidad Tecnológica de Salamanca</p>
+            <a href="https://www.utsalamanca.edu.mx" target="_blank" rel="noopener noreferrer">
+                <img src="https://siesav.utsalamanca.edu.mx/media/images/Logo-UTS-2023.png" alt="UTS Logo">
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>

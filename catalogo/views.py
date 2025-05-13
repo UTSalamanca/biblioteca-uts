@@ -3,15 +3,16 @@ from almacen.models import acervo_model
 from catalogo.models import model_catalogo
 from django.contrib import messages
 from .forms import catalogo_form
-import json
 import base64
 from django.http import JsonResponse
-from django.utils.timezone import now, localtime
-from sito.models import Alumno, AlumnoGrupo, Grupo, Carrera, Usuario, Persona, Periodo, Docente
+from django.utils.timezone import now
+from sito.models import Alumno, AlumnoGrupo, Grupo, Carrera, Usuario, Persona
 from static.helpers import *
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 # Create your views here.
-def catalago(request):
+def catalogo(request):
     """Función principal para mostrar la información en el index
 
     Args:
@@ -23,11 +24,51 @@ def catalago(request):
     data_prestamo = 'Interno: Préstamos dentro de la universidad. Externo: Préstamos fuera de la universidad, con 6 días permitidos como límite.'
     form = catalogo_form()
     side_code = 400
-    listado = acervo_model.objects.all()
-    return render(request, 'index_catalogo.html', {"side_code": side_code, "listado":listado, "form":form, "data_prestamo": data_prestamo})
+    # Acciones para busqueda
+    busqueda = request.GET.get("buscar")
+    # Obtiene la información del select para filtrar
+    m_tab = request.GET.get("m_tab")
+    if busqueda:
+        all_catalogo = acervo_model.objects.filter(
+            Q(titulo__icontains = busqueda) |
+            Q(autor__icontains = busqueda) |
+            Q(editorial__icontains = busqueda) |
+            Q(edicion__icontains = busqueda) |
+            Q(anio__icontains = busqueda) |
+            Q(adqui__icontains = busqueda) |
+            Q(formato__icontains = busqueda) 
+
+        ).distinct()
+    else:
+        all_catalogo = acervo_model.objects.all()
+    # Ordenamiento de datos
+    all_catalogo = all_catalogo.order_by('titulo')
+    # Acciones para el paginado
+    show_elem = int(m_tab) if m_tab else 10
+    paginator = Paginator(all_catalogo, show_elem)
+    page = request.GET.get('page') or 1
+    listado = paginator.get_page(page)
+    pagina_actual = int(page)
+
+    total_paginas = listado.paginator.num_pages
+    # Definir cuántas páginas mostrar a la vez
+    num_mostrar = 5
+    mitad = num_mostrar // 2
+    # Rango dinámico de páginas a mostrar
+    inicio = max(pagina_actual - mitad, 1)
+    fin = min(pagina_actual + mitad, total_paginas) +1
+    paginas = range(inicio, fin)
+
+    return render(request, 'catalogo/catalogo.html', {
+        "side_code": side_code, 
+        "listado":listado, 
+        "pagina_actual": pagina_actual, 
+        "paginas":paginas, 
+        "form":form, 
+        "data_prestamo": data_prestamo})
 
 # Genera la vista para la tabla de prestamos
-@groups_required('Administrador')
+@groups_required('Biblioteca')
 def prestamos_View(request):
     """Función para el recopialdo de la información para los dashboard y tablas de inicio
 
@@ -38,14 +79,35 @@ def prestamos_View(request):
         array: Arreglo con la información formateada
     """
     side_code = 401
-    listado = model_catalogo.objects.all()
+    # Acciones para busqueda
+    busqueda = request.GET.get("buscar")
+    # Obtiene la información del select para filtrar
+    m_tab = request.GET.get("m_tab")
+    if busqueda:
+        all_listado = model_catalogo.objects.filter(
+            Q(cve_prestamo__icontains = busqueda) |
+            Q(nom_libro__icontains = busqueda) |
+            Q(nom_autor__icontains = busqueda) |
+            Q(edicion__icontains = busqueda) |
+            Q(colocacion__icontains = busqueda) |
+            Q(cantidad_m__icontains = busqueda) |
+            Q(matricula__icontains = busqueda) |
+            Q(nom_alumno__icontains = busqueda) |
+            Q(carrera_grupo__icontains = busqueda) |
+            Q(tipoP__icontains = busqueda) |
+            Q(fechaP__icontains = busqueda) |
+            Q(entrega__icontains = busqueda) |
+            Q(fechaE__icontains = busqueda) |
+            Q(fechaD__icontains = busqueda)
 
+        ).distinct()
+    else:
+        all_listado = model_catalogo.objects.all()
+    # Ordenamiento de datos
+    all_listado = all_listado.order_by('-fechaP', '-fechaE', '-fechaD')
     dias_permitidos = 6
-    data = {}
     data_all = []
-    cont = 0
-
-    for f in listado:
+    for f in all_listado:
         data = {
             "id": f.id,
             "cve_prestamo": f.cve_prestamo,
@@ -78,8 +140,25 @@ def prestamos_View(request):
             data["dias_restantes"] = dias_restantes
             
         data_all.append(data)
-    # print(json.dumps(data_all, sort_keys=False, indent=2))
-    return render(request, 'index_prestamos.html', {"side_code": side_code, "data_all": data_all})
+    # Acciones para el paginado
+    show_elem = int(m_tab) if m_tab else 10
+    paginator = Paginator(data_all, show_elem)
+    page = request.GET.get('page') or 1
+    listado = paginator.get_page(page)
+    pagina_actual = int(page)
+    total_paginas = listado.paginator.num_pages
+    # Definir cuántas páginas mostrar a la vez
+    num_mostrar = 5
+    mitad = num_mostrar // 2
+    # Rango dinámico de páginas a mostrar
+    inicio = max(pagina_actual - mitad, 1)
+    fin = min(pagina_actual + mitad, total_paginas) +1
+    paginas = range(inicio, fin)
+    return render(request, 'catalogo/registro_prestamos.html', {
+        "side_code": side_code, 
+        "listado": listado,
+        "pagina_actual":pagina_actual, 
+        "paginas":paginas})
 
 # obtiene datos de la persona por medio de su matricula o cve
 def get_alumno(request):
@@ -179,22 +258,23 @@ def prestamo_registro(request):
             form = catalogo_form(request.POST)
             if form.is_valid():
                 # Se obtiene el número de libros existentes
-                exist_book = acervo_model.objects.filter(titulo=form.cleaned_data['nom_libro'], colocacion=form.cleaned_data['colocacion']).first()
+                exist_book = acervo_model.objects.filter(formato=form.cleaned_data['formatoejem'], colocacion=form.cleaned_data['colocacion']).first()
                 if exist_book:
                     if exist_book.cant > 0:
                         if form.cleaned_data['cantidad_i'] < 0:
                             messages.add_message(request, messages.INFO, 'No puedes ingresar una cantidad negativa')
-                            return redirect('catalago')
+                            return redirect('catalogo:catalogo')
                         if form.cleaned_data['cantidad_i'] > exist_book.cant:
                             # Redirigir a la vista deseada
                             messages.add_message(request, messages.INFO, 'La solicitud excedió la cantidad de libros')
-                            return redirect('catalago')
+                            return redirect('catalogo:catalogo')
                         # Si la cantidad de los libros es mayor a 0, se realiza el prestamo
                         cve_prestamo = create_cve(form.cleaned_data['nom_alumno'], form.cleaned_data['colocacion'])
                         nom_libro = form.cleaned_data['nom_libro']
                         nom_autor = form.cleaned_data['nom_autor']
                         edicion = form.cleaned_data['edicion']
                         colocacion = form.cleaned_data['colocacion']
+                        formatoejem = form.cleaned_data['formatoejem']
                         cantidad_i = form.cleaned_data['cantidad_i']
                         cantidad_m = form.cleaned_data['cantidad_i']
                         matricula = form.cleaned_data['matricula']
@@ -204,12 +284,13 @@ def prestamo_registro(request):
                         entrega = 'Proceso'
                         fechaP = now().replace(microsecond=0)
 
-                        catalago=model_catalogo.objects.create(
+                        catalogo=model_catalogo.objects.create(
                                 cve_prestamo = cve_prestamo,
                                 nom_libro = nom_libro,
                                 nom_autor = nom_autor,
                                 edicion = edicion,
                                 colocacion = colocacion,
+                                formatoejem = formatoejem,
                                 cantidad_i = cantidad_i,
                                 cantidad_m = cantidad_m,
                                 matricula = matricula,
@@ -225,29 +306,31 @@ def prestamo_registro(request):
 
                         messages.add_message(request, messages.SUCCESS, 'Prestamo Solicitado')
                         # Redirigir a la vista deseada
-                        return redirect('prestamos_usuario')
+                        return redirect('catalogo:prestamos_usuario')
                     else:
                         messages.add_message(request, messages.INFO, 'Ejemplar agotado')
                         # Redirigir a la vista deseada
-                        return redirect('catalago')    
+                        return redirect('catalogo:catalogo')    
                 else:
                     messages.add_message(request, messages.INFO, 'Ejemplar no encontrado')
                     # Redirigir a la vista deseada
-                    return redirect('catalago')
+                    return redirect('catalogo:catalogo')
             else:
                 # Si el formulario no es válido, vuelve a renderizar el formulario con errores
                 messages.add_message(request, messages.ERROR, '¡Por favor, corrija los errores del formulario!')
-                return redirect('catalago')
+                return redirect('catalogo:catalogo')
         else:
             # Si no es un POST, se asume que es un GET
             form = catalogo_form()
             messages.add_message(request, messages.ERROR, '¡Algo salio mal!')
-            return redirect('catalago')
+            return redirect('catalogo:catalogo')
     except Exception as p:
-        print(p)
-        return HttpResponse("¡El proceso no se pudo realizar!", status=400)
+        messages.add_message(request, messages.ERROR, '¡Algo salio mal!\nContacte al departamento de TI')
+        return redirect('catalogo:catalogo')
+        # return HttpResponse("¡El proceso no se pudo realizar!", status=400)
 
 # Función para convertir documento a base64
+@groups_required('Biblioteca')
 def convert_base64(img):
     """Función para la conversión de una imagen en base64
 
@@ -261,7 +344,7 @@ def convert_base64(img):
         imagen_base64 = base64.b64encode(img.read()).decode('utf-8')
         return imagen_base64
     except FileNotFoundError:
-        raise FileNotFoundError(f"No se encontró la imagen en la ruta: {ruta_imagen}")
+        raise FileNotFoundError(f"No se encontró la imagen en la ruta")
     except Exception as e:
         raise Exception(f"Error al convertir la imagen a Base64: {e}")
 
@@ -286,15 +369,15 @@ def view_book(request, base64):
             # Se crea el archivo temporal y se obtiene la ruta
             name_temp = temporary_image_base64(base64, titulo, colocacion)
             # Se separan los datos no necesarios
-            ruta = name_temp.split('/code')[1]
+            name_temp.split('/code')[1]
         else:
-            messages.add_message(request, messages.ERROR, 'Libro no encontrado')
-            return redirect('catalago')
+            messages.add_message(request, messages.ERROR, 'Ejemplar no encontrado')
+            return redirect('catalogo:catalogo')
     except Exception as vi:
-        return redirect('catalago')
+        return redirect('catalogo:catalogo')
 
 # Carga la vista con la información del acervo
-@groups_required('Administrador')
+@groups_required('Biblioteca')
 def cargar_portada(request):
     """Muestra la información de catalogos
 
@@ -306,7 +389,7 @@ def cargar_portada(request):
     """
     side_code = 402
     form = catalogo_form()
-    return render(request, 'cargar_portada.html', {"form":form, "side_code": side_code})
+    return render(request, 'catalogo/cargar_portada.html', {"form":form, "side_code": side_code})
 
 # Función que realiza la edición del elemento con la imagen de portada
 def edit_portada(request):
@@ -322,22 +405,19 @@ def edit_portada(request):
         data = {}
         cont = 1
         colocacion = ''
-        # Se almacena la imagen entrante con el nombre del libro que le corresponde.
         for r in request.FILES:
-            data[cont] = [r, request.POST.get(f"titulo-{cont}")]
+            splt = r.split('-')
+            data[cont] = [r, request.POST.get(f"titulo-{splt[1]}")]
             cont += 1
 
+        print(data)
         # Se realiza el guardado de la imagen con el libro indicado
         for d in range(len(data)):
-            # print(data[d+1][1]) # Se obtiene el nombre del libro
-
-            # return redirect('cargar_portada')
             colocacion = request.POST.get('colocacion')  # Obtén la colocación del formulario
-            nueva_portada = request.FILES[data[d+1][0]]  # Obtén el archivo subido
-
+            nueva_portada = request.FILES[data[d + 1][0]]  # Obtén el archivo subido
             if not colocacion or not nueva_portada:
                 messages.add_message(request, messages.ERROR, 'Falta información: colocación o archivo de portada.')
-                return redirect('cargar_portada')  # Redirige con un mensaje de error
+                return redirect('catalogo:cargar_portada')  # Redirige con un mensaje de error
 
             # Buscar el registro en la base de datos por `colocacion`
             acervo_update = acervo_model.objects.filter(colocacion=colocacion, titulo=data[d+1][1]).first()
@@ -350,12 +430,12 @@ def edit_portada(request):
                 
             else:
                 messages.add_message(request, messages.ERROR, 'No se encontró un registro con la colocación proporcionada.')
-                return redirect('cargar_portada')  # Redirige con un mensaje de error
+                return redirect('catalogo:cargar_portada')  # Redirige con un mensaje de error
         messages.add_message(request, messages.SUCCESS, 'Portada actualizada exitosamente.')
-        return redirect('cargar_portada')  # Redirige al éxito
+        return redirect('catalogo:cargar_portada')  # Redirige al éxito
     else:
         messages.add_message(request, messages.ERROR, 'Solicitud inválida.')
-        return redirect('cargar_portada')
+        return redirect('catalogo:cargar_portada')
 
 # Se buscan lo libro por colocación
 def search_book(request):
@@ -417,50 +497,66 @@ def book_delivered(request, cve, entrega):
             # Se realiza la disminución de la cantidad en el acervo (si se corrige el estado)
             if entrega == 'Entregado':
                 # Se actualizan los campos necesario en el registro de prestamos
-                ref_catalogo = acervo_model.objects.filter(titulo=book.nom_libro, colocacion=book.colocacion).first()
+                ref_catalogo = acervo_model.objects.filter(formato=book.formatoejem, colocacion=book.colocacion).first()
                 if ref_catalogo:
                     ref_catalogo.cant = ref_catalogo.cant + book.cantidad_m
                     ref_catalogo.save()
                 else:
                     messages.add_message(request, messages.ERROR, 'No se encontro la referencia en acervo')
-                    return redirect('prestamos_View')
+                    return redirect('catalogo:prestamos_View')
                 book.entrega = 'Devuelto'
                 book.fechaD = now().replace(microsecond=0)
                 book.cantidad_m = 0
-            # Se guardan los cambios en la tabla del catalago
+            # Se guardan los cambios en la tabla del catalogo
             book.save()
 
             messages.add_message(request, messages.SUCCESS, 'Estado del prestamo modificado')
-            return redirect('prestamos_View')
+            return redirect('catalogo:prestamos_View')
         else:
             messages.add_message(request, messages.ERROR, '¡Algo salio mal!.')
-            return redirect('prestamos_View')
+            return redirect('catalogo:prestamos_View')
     except Exception as b:
-        print(b)
         messages.add_message(request, messages.ERROR, 'No se pudo realizar la acción.')
-        return redirect('prestamos_View')
+        return redirect('catalogo:prestamos_View')
 
 # Vista, retorna todos los libros solicitados por el usuario
 def prestamos_usuario(request):
     """Revuelve todos los libros solicitados por el usuario
-
     Args:
         request (object): Objeto que contiene la información sobre la solicitud HTTP
-
     Returns:
         array: Información filtrada del ejemplar
     """
     side_code = 403
     try:
         ref_matricula = str(request.user)
-        ref_persona = model_catalogo.objects.filter(matricula=ref_matricula)
+        # Acciones para busqueda
+        busqueda = request.GET.get("buscar")
+        # Obtiene la información del select para filtrar
+        m_tab = request.GET.get("m_tab")
+        if busqueda:
+            all_prestamos = model_catalogo.objects.filter(
+                    matricula=ref_matricula
+                ).filter(
+                    Q(cve_prestamo__icontains = busqueda) |
+                    Q(nom_libro__icontains = busqueda) |
+                    Q(nom_autor__icontains = busqueda) |
+                    Q(edicion__icontains = busqueda) |
+                    Q(cantidad_m__icontains = busqueda) |
+                    Q(tipoP__icontains = busqueda) |
+                    Q(fechaP__icontains = busqueda) |
+                    Q(fechaE__icontains = busqueda) |
+                    Q(fechaD__icontains = busqueda) 
 
+                ).distinct()
+        else:
+            all_prestamos = model_catalogo.objects.filter(matricula=ref_matricula)
+        # Se realiza el ordenamiento
+        all_prestamos = all_prestamos.order_by('-fechaP', '-fechaE', '-fechaD')
         dias_permitidos = 6
         data = {}
-        data_all = []
-        cont = 0
-
-        for f in ref_persona:
+        prestamos = []
+        for f in all_prestamos:
             data = {
                 "id": f.id,
                 "cve_prestamo": f.cve_prestamo,
@@ -487,17 +583,39 @@ def prestamos_usuario(request):
                 diferencia = ahora - fecha_limite
                 # Obtener el número de días de la diferencia
                 dias_transcurridos = diferencia.days
-
                 dias_restantes = dias_permitidos - dias_transcurridos
-
                 data["dias_restantes"] = dias_restantes
-                
-            data_all.append(data)
-        return render(request, 'libros_pedidos.html', { "side_code": side_code, "data_all": data_all})
+            prestamos.append(data)
+        
+        # Acciones para el paginado
+        try:
+            show_elem = int(m_tab) if m_tab else 10
+        except ValueError:
+            show_elem = 10
+
+        paginator = Paginator(prestamos, show_elem)
+        page = request.GET.get('page') or 1
+        ref_persona = paginator.get_page(page)
+        pagina_actual = int(page)
+
+        total_paginas = ref_persona.paginator.num_pages
+        # Definir cuántas páginas mostrar a la vez
+        num_mostrar = 5
+        mitad = num_mostrar // 2
+        # Rango dinámico de páginas a mostrar
+        inicio = max(pagina_actual - mitad, 1)
+        fin = min(pagina_actual + mitad, total_paginas) +1
+        paginas = range(inicio, fin)
+
+        return render(request, 'catalogo/prestamos_indv.html', { 
+            "side_code": side_code, 
+            "listado": ref_persona, 
+            "pagina_actual": pagina_actual,
+            "paginas": paginas})
+    
     except Exception as g:
-        print(g)
         messages.add_message(request, messages.ERROR, 'No se encontro información.')
-        return redirect('inicio')
+        return redirect('inicio:inicio')
 
 # Cambia el estado de la entrega de los libros
 def renew_again(request, cve, cant, entrega):
@@ -517,35 +635,34 @@ def renew_again(request, cve, cant, entrega):
         if book:
             if entrega != 'Proceso':
                 # Valida la cantidad de libros que se solicitan renovar
-                # cant = int(cant)
                 if entrega != 'Devuelto':
                     if cant < book.cantidad_m:
                         diferencia = book.cantidad_m - cant
                         # Se obtiene la referencia del libro en el acervo
-                        ref_catalogo = acervo_model.objects.filter(titulo=book.nom_libro, colocacion=book.colocacion).first()
+                        ref_catalogo = acervo_model.objects.filter(formato=book.formatoejem, colocacion=book.colocacion).first()
                         if ref_catalogo:
                             # Se aumenta la diferencia en la cantidad total
                             ref_catalogo.cant = ref_catalogo.cant + diferencia
                             ref_catalogo.save()
                         else:
                             messages.add_message(request, messages.ERROR, 'No se encontro la referencia en acervo')
-                            return redirect('prestamos_View')
+                            return redirect('catalogo:prestamos_View')
                         # Sere realiza el ajuste de libros en el catalogo
                         book.cantidad_m = book.cantidad_m - diferencia
                 else:
 
                     # Se obtiene la referencia del libro en el acervo
-                    ref_catalogo = acervo_model.objects.filter(titulo=book.nom_libro, colocacion=book.colocacion).first()
+                    ref_catalogo = acervo_model.objects.filter(formato=book.formatoejem, colocacion=book.colocacion).first()
                     if ref_catalogo:
                         # Se aumenta la diferencia en la cantidad total
                         if cant > ref_catalogo.cant:
                             messages.add_message(request, messages.INFO, 'La cantidad soicitada, ya no esta disponible')
-                            return redirect('prestamos_View')    
+                            return redirect('catalogo:prestamos_View')    
                         ref_catalogo.cant = ref_catalogo.cant - cant
                         ref_catalogo.save()
                     else:
                         messages.add_message(request, messages.ERROR, 'No se encontro la referencia en acervo')
-                        return redirect('prestamos_View')
+                        return redirect('catalogo:prestamos_View')
                     # Sere realiza el ajuste de libros en el catalogo
                     book.cantidad_m = cant
                     book.cantidad_i = cant
@@ -556,22 +673,21 @@ def renew_again(request, cve, cant, entrega):
                 book.save()
 
                 messages.add_message(request, messages.SUCCESS, 'Renovación exitosa')
-                return redirect('prestamos_View')
+                return redirect('catalogo:prestamos_View')
             else:
                 messages.add_message(request, messages.INFO, 'El libro aún no ha sido entregado')
-                return redirect('prestamos_View')
+                return redirect('catalogo:prestamos_View')
         else:
             messages.add_message(request, messages.ERROR, '¡Algo salio mal!')
-            return redirect('prestamos_View')
+            return redirect('catalogo:prestamos_View')
     except Exception as b:
         print(b)
         messages.add_message(request, messages.ERROR, 'No se pudo realizar la acción')
-        return redirect('prestamos_View')
+        return redirect('catalogo:prestamos_View')
 
-# Llega petición ajax, busqueda de cantidad por titulo y colocación
+# Llega petición ajax, busqueda de cantidad por formato y colocación
 def cant_for_search(request):
     """Busca ejemplar en el acervo
-
     Args:
         request (object): Objeto que contiene la información sobre la solicitud HTTP
 
@@ -579,9 +695,9 @@ def cant_for_search(request):
         array: Información filtrada de la cantidad de ejemplares
     """
     try:
-        get_titulo = request.GET['titulo']
+        get_formatoejem = request.GET['formatoejem']
         get_colocacion = request.GET['colocacion']
-        exist_element = acervo_model.objects.filter(titulo=get_titulo, colocacion=get_colocacion).first()
+        exist_element = acervo_model.objects.filter(formato=get_formatoejem, colocacion=get_colocacion).first()
         if exist_element:
             return JsonResponse({'status': 'success', 'cantidad': exist_element.cant})
         else:

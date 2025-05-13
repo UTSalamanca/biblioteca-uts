@@ -1,0 +1,113 @@
+{%extends 'base.html'%}
+{%load static%}
+{%block title%}Catálogo{%endblock%}
+{%block content%}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/catalogo.css' %}">
+{% endblock %}
+
+<div id="catalogo">
+    <section class="content-header mt-5">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Catálogo</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'inicio:inicio' %}"><i class="fas fa-home" style="color: black;"></i></a>
+                        </li>
+                        <li class="breadcrumb-item text-info">Catálogo</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <div class="content mx-4 pb-4">
+        <div id="contentTitle" class="row">
+            <div class="col-xl-6 align-self-center">
+                <h5 class="text-bold">Ejemplares</h5>
+            </div>
+        </div>
+        <div class="table-responsive bg-white p-2">    
+            <div class="row pb-2">
+                <div class="col-xl-6 d-flex">
+                    <span class="align-content-center mr-1 mt-1">Mostrar</span>
+                    <form method="GET" id="form_tab_select">
+                        <select name="m_tab" id="select_tabs" class="form-select">
+                            <option value="10" {% if request.GET.m_tab == "10" %}selected{% endif %}>10</option>
+                            <option value="20" {% if request.GET.m_tab == "20" %}selected{% endif %}>20</option>
+                            <option value="50" {% if request.GET.m_tab == "50" %}selected{% endif %}>50</option>
+                            <option value="100" {% if request.GET.m_tab == "100" %}selected{% endif %}>100</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="col-xl-6">
+                    <div class="search d-flex justify-content-end">
+                        <form method="GET">
+                            <div id="custom-search-input">
+                                <div class="input-group col-md-12">
+                                    <input type="search" class="form-control" placeholder="Buscar..." name="buscar" value="{{ request.GET.buscar }}">
+                                    <span class="input-group-list">
+                                        <i class="icon icon-search"></i>
+                                        <button type="submit" class="btn">Buscar</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% if listado %}
+                <table id="catalogoTable" class="table table-striped" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th class="text-center">Titulo</th>
+                        <th class="text-center">Autor</th>
+                        <th class="text-center">Editorial</th>
+                        <th class="text-center">Edición</th>
+                        <th class="text-center">Formato</th>
+                        <th class="text-center">En existencia</th>
+                        <th class="text-center">Solicitar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for p in listado %}
+                    <tr data-titulo="{{p.titulo}}" data-autor="{{p.autor}}" data-edicion="{{p.edicion}}"
+                    data-colocacion="{{p.colocacion}}" data-persona="{{user}}" data-base64="{{p.base64}}"
+                    data-formatoejem="{{p.formato}}">
+                        <td>{{p.titulo}}</td>
+                        <td>{{p.autor}}</td>
+                        <td>{{p.editorial}}</td>
+                        <td class="text-right">{{p.edicion}}</td>
+                        <td>{{p.formato}}</td>
+                        {% if p.cant == 0 %}
+                        <td><span class="text-bold text-danger">Agotado</span></td>
+                        {% else %}
+                        <td class="text-right">{{p.cant}}</td>
+                        {% endif %}
+                        <td class="text-center">
+                        <a type="button" id="btnPedidoBook" class="btn float-center" data-bs-toggle="modal"
+                            data-bs-target="#modal_catalogo" data-bs-placement="top"
+                            title="Realizar préstamo"><i class="fas fa-book ml-1"></i>
+                        </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% include 'catalogo/paginacion.html' %}
+            {% else %}
+                {% include 'sin_registros.html' %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% include 'catalogo/modal.html' %}
+{%endblock%}
+{% block js %}
+<script src="{% static 'js/catalogo.js' %}"></script>
+{% endblock %}

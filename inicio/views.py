@@ -1,5 +1,4 @@
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.shortcuts import render
 from almacen.models import acervo_model
 from estadias.models import register_view, model_estadias
 from sito.models import Persona, Usuario, Carrera
@@ -8,6 +7,8 @@ from .report_xlsx import generate_report
 from catalogo.models import model_catalogo
 from datetime import datetime
 import calendar
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 # Create your views here.
 def index_inicio(request):
@@ -21,9 +22,7 @@ def index_inicio(request):
     """
     # Se asigna el código para el focus en el sidebar
     side_code = 100
-
-    if request.user.groups.filter(name='Administrador').exists():
-    # if request.user.groups.filter(name='Alumno').exists():
+    if request.user.groups.filter(name='Biblioteca').exists():
         # Se obtienen todos los datos del acervo
         datos = acervo_model.objects.all()
         # Se realiza el conteo de todos los libros
@@ -35,10 +34,49 @@ def index_inicio(request):
         # Se realiza el recopilado del tipo de adquisición
         value_adqui = get_adqui(datos)
         # ==> Registro de vista
-        ctrl_info = register_view.objects.order_by('-fecha_consulta')
-        ctrl_view = ctrl_view_report(ctrl_info)
-        # ==> fin
+        # Acciones para busqueda
+        busqueda = request.GET.get("buscar")
+        # Obtiene la información del select para filtrar por cantidad
+        m_tab = request.GET.get("m_tab")
+        # Obtiene la información del select para filtar por periodo
+        periodo_opt = request.GET.get("periodo_opt")
+        # Si llega indicación 1 => Este mes o 2 => Mes anterior
+        if periodo_opt and periodo_opt != "all":
+            # Obtiene los periodos
+            periodo = get_periodo(periodo_opt)
+            all_info = register_view.objects.filter(
+                fecha_consulta__range=[periodo['fech_ini'], periodo['fech_fin']],
+            )
+        else:
+            all_info = register_view.objects.all()
+        # Si viene una busquea
+        if busqueda:
+            all_info = all_info.filter(
+                Q(matricula__icontains = busqueda) |
+                Q(consultas__icontains = busqueda) |
+                Q(fecha_consulta__icontains = busqueda) 
 
+            ).distinct()
+        
+        # Ordenamiento de datos
+        all_info = all_info.order_by('-fecha_consulta')
+        # Formatea la información para presentarta en tabla
+        views = ctrl_view_report(all_info)
+        # Acciones para el paginado
+        show_elem = int(m_tab) if m_tab else 10
+        paginator = Paginator(views, show_elem)
+        page = request.GET.get('page') or 1
+        ctrl_view = paginator.get_page(page)
+        pagina_actual = int(page)
+        total_paginas = ctrl_view.paginator.num_pages
+        # Definir cuántas páginas mostrar a la vez
+        num_mostrar = 5
+        mitad = num_mostrar // 2
+        # Rango dinámico de páginas a mostrar
+        inicio = max(pagina_actual - mitad, 1)
+        fin = min(pagina_actual + mitad, total_paginas) +1
+        paginas = range(inicio, fin)
+        # ==> fin
         data = {
             "total_book": totals['total_book'],
             "book_movimiento": total_prest['book_movimiento'],
@@ -51,14 +89,16 @@ def index_inicio(request):
             "cant_revistas": totals['format_revista'],
             "name_cole": value_adqui['name_cole'],
             "value_adqui": value_adqui['value_adqui'],
-            "ctrl_view": ctrl_view
+            "ctrl_view": ctrl_view,
+            "pagina_actual": pagina_actual,
+            "paginas": paginas
         }
-        return render(request, 'index_inicio.html', { "data": data })
+        return render(request, 'inicio/index_inicio.html', { "data": data })
     else:
         data = {
             "side_code": side_code
         }
-        return render(request, 'index_general.html', { "data": data })
+        return render(request, 'inicio/index_general.html', { "data": data })
 
 def cont_books(datos, type):
     """Contreo de ejemplares
@@ -184,7 +224,6 @@ def ctrl_view_report(info):
     """
     data = {}
     data_all = []
-
     # Obtiene el periodo de consulta
     for ctrl in info:
         cve_persona = Usuario.objects.get(login=ctrl.matricula)
@@ -200,8 +239,8 @@ def ctrl_view_report(info):
     
     return data_all
 
-def get_periodo(request):
-    """Se obtiene el ciclo y el rango de fechas para consulta GET por ajax
+def get_periodo(periodo):
+    """Se obtiene el ciclo y el rango de fechas para consulta en filtro de periodo
 
     Args:
         periodo (integer): Bandera para indicar el mes a consultar 
@@ -214,9 +253,6 @@ def get_periodo(request):
         - Fecha final
         - Ciclo
     """
-    periodo = request.GET.get('periodo')
-    periodo = int(periodo)
-    # Arreglo para obtención nombre de mes
     format = {
         "01": "ENERO",
         "02": "FEBRERO",
@@ -235,8 +271,7 @@ def get_periodo(request):
     year = date.strftime('%Y')
     month = date.strftime('%m')
     # Define mes de consulta
-    # resta = 1 if periodo == 1 else 0
-    calc = int(month) - periodo
+    calc = int(month) - int(periodo)
     _, num_days = calendar.monthrange(int(year), int(calc))
 
     calc_mes = f"0{calc}" if len(str(calc)) == 1 else calc
@@ -252,7 +287,7 @@ def get_periodo(request):
         'ciclo': ciclo
     }
 
-    return JsonResponse(data, safe=False)
+    return data
 
 def periodo_consulta(periodo):
     """Se obtiene el ciclo y el rango de fechas para consulta
@@ -340,8 +375,6 @@ def report(request, periodo):
         if formato == 'Libro':
             if len(volumen_libro) != 0:
                 if ejemplar in volumen_libro:
-                    # c_anterior = volumen_group[ejemplar]
-                    # suma = c_anterior + libro.cant
                     volumen_libro[ejemplar] = volumen_libro[ejemplar] + libro.cant
                     cantidad_libro[ejemplar] = cantidad_libro[ejemplar] + 1
                 else:
@@ -353,8 +386,6 @@ def report(request, periodo):
         if formato == 'Disco':
             if len(volumen_disco) != 0:
                 if ejemplar in volumen_disco:
-                    # c_anterior = volumen_group[ejemplar]
-                    # suma = c_anterior + libro.cant
                     volumen_disco[ejemplar] = volumen_disco[ejemplar] + libro.cant
                     cantidad_disco[ejemplar] = cantidad_disco[ejemplar] + 1
                 else:
@@ -366,8 +397,6 @@ def report(request, periodo):
         if formato == 'Revista':
             if len(volumen_revista) != 0:
                 if ejemplar in volumen_revista:
-                    # c_anterior = volumen_group[ejemplar]
-                    # suma = c_anterior + libro.cant
                     volumen_revista[ejemplar] = volumen_revista[ejemplar] + libro.cant
                     cantidad_revista[ejemplar] = cantidad_revista[ejemplar] + 1
                 else:
@@ -381,7 +410,6 @@ def report(request, periodo):
     conc_adquisicion = {}
     conc_adquisicion['fecha_inicial'] = fech_ini
     conc_adquisicion['fecha_final'] = fech_fin
-    concentrado = []
     adquisiciones = {}
     adqui_vol_libro = {}
     adqui_cant_libro = {}
@@ -442,8 +470,8 @@ def report(request, periodo):
         # Evita que se agregen duplicados
         if carrera.abreviatura not in conc_carreras:
             # Valida que este 
-            if carrera.activo:
-                conc_carreras[carrera.abreviatura] = carrera.nombre
+            # if carrera.activo:
+            conc_carreras[carrera.abreviatura] = carrera.nombre
     # Obtiene el número de visitas a los reportes de estadías
     views = register_view.objects.all()
     vistas_reportes = {}

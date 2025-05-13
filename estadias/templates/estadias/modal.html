@@ -1,0 +1,104 @@
+{% load static %}
+<!-- Modal de registro de proyectos de estadías-->
+<div class="modal fade" id="modal_registro" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="card">
+          <div class="card-header" style="background-color: #0a3d62; color: #fff;">
+            <h3 class="card-title">Agregar Proyecto de Estadías</h3>
+          </div>
+          <div class="card-body">
+            <form action="{% url 'estadias:estadias_registro' %}" method="POST" enctype="multipart/form-data" id="tbl_addproyecto">
+              {% csrf_token %}
+              <label class="text-muted" for="proyecto">Proyecto</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                </div>
+                {{ form.proyecto }}
+              </div>
+              <div class="row">
+                <label class="text-muted" for="matricula">Matricula</label>
+                <div class="input-group mb-3 col-6">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
+                  </div>
+                  {{ form.matricula }}
+                </div>
+                <div class="col-xl-2">
+                  <button type="button" class="btn btn-info" id="btn_search_matricula">Buscar</button>
+                </div>
+                <div class="col-xl-4" id="msg">
+                  <span id="msg_success" style="display: none;"><i class="fas fa-check-circle text-success"></i></span>
+                  <span class="text-info" id="msg_search" style="display: none;">Buscando...</span>
+                  <span class="text-danger text-bold" id="msg_error" style="display: none;"><i
+                        class="fas fa-times-circle text-danger"></i>Alumno no
+                    encontrado</span>
+                </div>
+              </div>
+              <label class="text-muted" for="alumno">Alumno</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
+                </div>
+                {{ form.alumno }}
+              </div>
+              <div class="row">
+                <div class="col-xl-6">
+                  <label class="text-muted" for="typeAdq">Carrera</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-address-card"></i></span>
+                    </div>
+                    {{ form.carrera }}
+                  </div>
+                </div>
+                <div class="col-xl-6">
+                  <label class="text-muted" for="anio">Generación</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+                    </div>
+                    {{ form.generacion }}
+                  </div>
+                </div>
+              </div>
+              <label class="text-muted" for="edito">Asesor Académico</label>
+              <div class="input-group mb-3" id="data_academico" data-academico="{{ persona }}">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-chalkboard-teacher"></i></span>
+                </div>
+                <input type="text" name="asesor_academico" value="{{ persona }}" class="form-control" readonly>
+              </div>
+              <label class="text-muted" for="edito">Asesor Organizacional</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+                </div>
+                {{ form.asesor_orga }}
+              </div>
+              <label class="text-muted" for="edic">Empresa</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-building"></i></span>
+                </div>
+                {{ form.empresa }}
+              </div>
+              <div class="row">
+                <label class="text-muted" class="form-label" name="reporte" for="customFile">Reporte estadías</label>
+                {{ form.reporte_file }}
+              </div>
+              <div class="mt-3">
+                <button type="submit" id="btnSendEstadias" class="btn float-right ml-1"
+                    style="background-color: #0a3d62; color: white">Agregar</button>
+                <button type="button" class="btn btn-default float-right" data-bs-dismiss="modal"
+                    id="close_modal_estadia">Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

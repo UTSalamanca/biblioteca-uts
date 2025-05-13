@@ -1,25 +1,18 @@
 from django.shortcuts import render, redirect
 from .models import model_estadias, register_view
 from .forms import estadias_form
-import os
 from django.http import FileResponse
-from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from static.helpers import *
 from django.contrib import messages
-from static.utils import dd
-from sito.models import Alumno, AlumnoGrupo, Grupo, Carrera, Usuario, Persona, Periodo
+from sito.models import Alumno, AlumnoGrupo, Grupo, Carrera, Usuario, Persona
 from static.context_processors import group_permission
 from django.http import JsonResponse
-import base64
-import tempfile
-import time
-from django.utils.timezone import localtime
+import base64, os, tempfile
 from django.utils.timezone import now
-
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-from django.shortcuts import get_object_or_404
 
 def add_group_name_to_contex(view_class):
     original_dispatch = view_class.dispatch
@@ -61,11 +54,48 @@ def index_proyectos(request):
     form = estadias_form()
     # Código para control de pestañas en sidebar
     side_code = 300
-    
-    reporte = model_estadias.objects.all()
-    return render(request,'index_proyectos.html',{"reporte":reporte, "form":form,"side_code":side_code})
+    # Acciones para busqueda
+    busqueda = request.GET.get("buscar")
+    # Obtiene la información del select para filtrar
+    m_tab = request.GET.get("m_tab")
+    if busqueda:
+        all_reporte = model_estadias.objects.filter(
+            Q(proyecto__icontains = busqueda) |
+            Q(matricula__icontains = busqueda) |
+            Q(alumno__icontains = busqueda) |
+            Q(asesor_academico__icontains = busqueda) |
+            Q(generacion__icontains = busqueda) |
+            Q(empresa__icontains = busqueda) |
+            Q(asesor_orga__icontains = busqueda) |
+            Q(carrera__icontains = busqueda)
+        ).distinct()
+    else:
+        all_reporte = model_estadias.objects.all()
+    # Ordenado de la información
+    all_reporte = all_reporte.order_by('proyecto')
+    # Acciones para el paginado
+    show_elem = int(m_tab) if m_tab else 10
+    paginator = Paginator(all_reporte, show_elem)
+    page = request.GET.get('page') or 1
+    reporte = paginator.get_page(page)
+    pagina_actual = int(page)
 
-@groups_required('32 Tutoreo - Tutor', 'Administrador')
+    total_paginas = reporte.paginator.num_pages
+    # Definir cuántas páginas mostrar a la vez
+    num_mostrar = 5
+    mitad = num_mostrar // 2
+    # Rango dinámico de páginas a mostrar
+    inicio = max(pagina_actual - mitad, 1)
+    fin = min(pagina_actual + mitad, total_paginas) +1
+    paginas = range(inicio, fin)
+
+    return render(request,'estadias/index_proyectos.html',{"reporte":reporte, 
+                                                  "paginas": paginas, 
+                                                  "pagina_actual":pagina_actual, 
+                                                  "form":form, 
+                                                  "side_code":side_code})
+
+@groups_required('32 Tutoreo - Tutor', 'Biblioteca', 'Alumno')
 def estadias_registro(request):
     """Agrega nuevo reporte en base de datos
 
@@ -85,17 +115,17 @@ def estadias_registro(request):
             )
             if exist_proyect:
                 messages.add_message(request, messages.INFO, 'Este proyecto ya fue registrado con el mismo alumno')
-                return redirect('proyectos')
+                return redirect('estadias:proyectos')
 
             exist_name_proyect = model_estadias.objects.filter(proyecto=request.POST['proyecto'])
             if exist_name_proyect:
                 messages.add_message(request, messages.INFO, 'Ya existe un proyecto con este nombre')
-                return redirect('proyectos')
+                return redirect('estadias:proyectos')
 
             # Validar archivo antes de procesarlo
             if not request.FILES['reporte_file']:
                 messages.add_message(request, messages.ERROR, 'Debe subir un archivo válido.')
-                return redirect('proyectos')
+                return redirect('estadias:proyectos')
             
             form = estadias_form(request.POST, request.FILES)
             if form.is_valid():
@@ -115,21 +145,21 @@ def estadias_registro(request):
                 fecha_registro = now().replace(microsecond=0)
 
                 # Crear registro
-                model_estadias.objects.create(
-                    proyecto=proyecto,
-                    matricula=matricula,
-                    alumno=alumno,
-                    asesor_academico=asesor_academico,
-                    generacion=generacion,
-                    empresa=empresa,
-                    asesor_orga=asesor_orga,
-                    carrera=carrera,
-                    reporte=name_ref,
-                    base64=base64_file,
-                    fecha_registro=fecha_registro
-                )
+                estadias = model_estadias.objects.create(
+                            proyecto=proyecto,
+                            matricula=matricula,
+                            alumno=alumno,
+                            asesor_academico=asesor_academico,
+                            generacion=generacion,
+                            empresa=empresa,
+                            asesor_orga=asesor_orga,
+                            carrera=carrera,
+                            reporte=name_ref,
+                            base64=base64_file,
+                            fecha_registro=fecha_registro
+                        )
                 messages.add_message(request, messages.SUCCESS, 'Registro agregado correctamente')
-                return redirect('proyectos')
+                return redirect('estadias:proyectos')
             else:
                 # Mostrar errores del formulario
                 print(form.errors)
@@ -137,7 +167,7 @@ def estadias_registro(request):
         else:
             form = estadias_form()
 
-        return render(request, 'index_proyectos.html', {'form': form})
+        return render(request, 'estadias/index_proyectos.html', {'form': form})
     except AttributeError as e:
         print(f"Error específico: {e}")
         return HttpResponse("Error relacionado con atributos de archivo.", status=400)
@@ -204,7 +234,7 @@ def view_report(request, report_rute):
         # Se separan los datos no necesarios
         ruta = name_temp.split('/code')[1]
 
-        return render(request, 'iframe_pdf.html', {'reporte': ruta, "side_code":side_code, "alumno":id_reporte})
+        return render(request, 'estadias/iframe_pdf.html', {'reporte': ruta, "side_code":side_code, "alumno":id_reporte})
     except Exception as v:
         print(f"Error en al generar vista de PDF: {v}")
 
@@ -267,7 +297,7 @@ def servir_pdf(request, report_rute):
     response['Content-Disposition'] = 'inline; filename="mi_documento.pdf"'
     return response
 
-@groups_required('32 Tutoreo - Tutor', 'Administrador')
+@groups_required('32 Tutoreo - Tutor', 'Biblioteca', 'Alumno')
 # Función de búsqueda para retorno de información por búsqueda con matricula
 def get_alumno(request):
     """Devuelve la información del alumno, esperada de petición ajax
@@ -280,6 +310,9 @@ def get_alumno(request):
     """
     matricula = request.GET.get('matricula')
     if matricula:
+        existe_alumno = Alumno.objects.filter(matricula=matricula)
+        if not existe_alumno.exists():
+            return JsonResponse({'error': 1})
         cve_persona = ''
         try:
             # alumno_grupo = get_object_or_404(AlumnoGrupo, matricula=matricula)

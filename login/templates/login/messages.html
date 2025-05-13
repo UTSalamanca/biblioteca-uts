@@ -1,0 +1,15 @@
+{% for message in messages %}
+    <div class="alert 
+                {% if message.tags == 'success' %} alert-success bg-success text-white 
+                {% elif message.tags == 'danger' %} alert-danger bg-danger text-white 
+                {% elif message.tags == 'warning' %} alert-warning bg-warning text-dark 
+                {% elif message.tags == 'info' %} alert-info bg-info text-white 
+                {% else %} alert-primary bg-primary text-white 
+                {% endif %} 
+                alert-dismissible fade show w-100" style="border-radius: 10px !important;" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{ message }}
+    </div>
+{% endfor %}

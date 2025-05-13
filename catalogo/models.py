@@ -20,6 +20,7 @@ class model_catalogo(models.Model):
     nom_autor=models.CharField(max_length=255)
     edicion=models.CharField(max_length=255)
     colocacion=models.CharField(max_length=255)
+    formatoejem=models.CharField(max_length=255)
     cantidad_i=models.IntegerField()
     cantidad_m=models.IntegerField()
     matricula=models.IntegerField()

@@ -24,8 +24,8 @@
     border: 1px solid #ccc;
 }
 
-table.dataTable td, th {
-    font-size: 0.9rem;
+.table td, th {
+    font-size: 0.8rem;
 }
 
 #vista_prestamos {
@@ -73,8 +73,27 @@ table.dataTable td, th {
     align-items: center;
 }
 
-/*
-#pedidos .table-responsive {
-    border-radius: 0 0 10px 10px;
+#carga_portada .card #btn_search_portada {
+    background-color: #0a3d62; 
+    color: #fff;
+    margin-left: 0.5rem;
 }
-*/
+
+#paginator .page-link {
+    font-size: 0.8rem;
+    color: black;
+}
+
+#vista_prestamos #custom-search-input button, 
+#catalogo #custom-search-input button {
+    background-color: #3c6382;
+    color: #fff;
+}
+
+#vista_prestamos #select_tabs {
+    max-width: 5rem;
+}
+
+#catalogo #catalogoTable #btnPedidoBook i {
+    color: #3c6382;
+}

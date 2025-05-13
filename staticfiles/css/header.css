@@ -1,0 +1,24 @@
+.main-header {
+    background-color: #0a3d62;
+}
+
+.main-header #logoutBtn {
+    /*  width: 10rem;*/
+    /*position: absolute;*/
+    /*left: -6rem;*/
+    border-radius: 5px;
+    background-color: #3c6382;
+}
+
+.main-header #logoutBtn a:hover {
+    background-color: #60a3bc;
+}
+
+.main-header #btnDropdown {
+    background-color: #3c6382;
+}
+
+.main-header #logoutBtn i {
+    color: red;
+}
+

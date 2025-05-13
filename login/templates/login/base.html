@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}{% endblock %}</title>
+        <!-- Google Font: Source Sans Pro -->
+        <link rel="stylesheet" 
+            href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="{% static 'lib/plugins/fontawesome-free/css/all.min.css' %}">
+        <!-- Theme style -->
+        <link rel="stylesheet" href="{% static 'lib/dist/css/adminlte.min.css' %}">
+        <!--Css-->
+        <link rel="stylesheet" href="{% static 'css/style_login.css' %}">
+        <!-- FAVICON -->
+        <link rel="shortcut icon" href="{% static 'img/Logo-UTS.png' %}" type="image/x-icon">
+        {% block css %}{% endblock%}
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf_viewer.min.css"
+            integrity="sha512-dbJOtZ3VfH52HMyZ0hz6HcLVK0bESRU396ht5fz4EC6icMeT0MKSYxp6LoydBDaMUHiAGjnI9vA3hZRcCc2Fxw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    </head>
+
+    <body class="hold-transition sidebar-mini layout-fixed loaderHidden" id="loginMaster">
+        <div class="loaderCenter" id="loaderID">
+            <div class="lds-roller">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+        <!-- Site wrapper -->
+        <div class="wrapper">
+            <!-- Content Wrapper. Contains page content -->
+            {% block content %}{% endblock %}
+        </div>
+        <!-- ./wrapper -->
+
+         <!-- jQuery -->
+         <script src="{% static 'lib/plugins/jquery/jquery.min.js' %}"></script>
+         <!-- Bootstrap 5.1.3 -->
+         <script src="{% static 'js/boostrap.min.js' %}"></script>
+         <!--SweetAlert 2-->
+         <script src="{% static 'lib/plugins/sweetalert2/sweetalert2.all.min.js' %}"></script>
+         <!-- AdminLTE App -->
+         <script src="{% static 'lib/dist/js/adminlte.min.js' %}"></script>
+
+         {% if messages %}
+         {% for message in messages %}
+         <script>
+             let icons = {
+                 'debug': 'info',
+                 'Info': 'info',
+                 'Éxito': 'success',
+                 'Alerta': 'warning',
+                 'Error': 'error'
+             };
+             Swal.fire({
+                 title: '{% if message.tags %}{{ message.tags|title }}{% else %}Mensaje{% endif %}',
+                 text: '{{ message }}',
+                 icon: icons['{{ message.tags|title }}'],
+                 showConfirmButton: false,
+                 timer: 2100
+             });
+         </script>
+         {% endfor %}
+         {% endif %}
+         {% block js %}{% endblock %}
+    </body>
+
+</html>
