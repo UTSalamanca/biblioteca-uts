@@ -8,9 +8,9 @@ const estadia_alert = (title, text, icon) => {
     })
 }
 
-const register_deleteSwal = (title, coloca, text, icon, rute) => {
+const register_deleteSwal = (title, coloca, text, icon, rute, format) => {
     Swal.fire({
-        "title": title + ' - ' + coloca,
+        "title": format + ' - ' + coloca,
         "text": text,
         "icon": icon,
         "showCancelButton": true,
@@ -22,8 +22,9 @@ const register_deleteSwal = (title, coloca, text, icon, rute) => {
     })
         .then(function (result) {
             if (result.isConfirmed) {
+                $.LoadingOverlay("show");
                 // Envía la colocación del registro a eliminar
-                location.href = '/' + rute + coloca
+                location.href = '/' + rute + '/' + coloca + '/' + format
             }
         })
 }
