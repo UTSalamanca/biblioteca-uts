@@ -26,20 +26,18 @@ MIDDLEWARE = [
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
 env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env()
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-i-quay)0vi@ofqo!o*js^01l_p7s+sh^c7!mdydd53y0x5lb3w'
 SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DJANGO_DEBUG", default=False)
-# DEBUG = env('DEBUG')
+DEBUG = env.bool('DJANGO_DEBUG', default=False)
 
-ALLOWED_HOSTS = ['*']  # O tu dominio si es necesario
+ALLOWED_HOSTS = tuple(env.list('ALLOWED_HOSTS', default=[]))
 
 if not DEBUG:
     # Configura el static para permitir --insecure
@@ -191,7 +189,15 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -201,11 +207,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'sistema.UsuarioAcceso'
 
 DATABASE_ROUTERS = ['routers.db_routers.AuthRouter']
-
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-# Configuración archivos Media, para guardado de documentos
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
