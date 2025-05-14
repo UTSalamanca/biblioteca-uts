@@ -159,16 +159,21 @@ $(document).ready(function () {
     })
 
     // Función para el borrado de elementos
-    $('#acervoTable').on('click', 'tbody #info_data td a#remove_register', function (e) {
-        let data = $(this).closest('#info_data').data(),
-            coloca = data['coloca'],
-            title = data['title'],
-            text = "El registro no se podrá recuperar",
-            icon = "warning",
-            rute = '/acervo/delete_acervo/'
-        // Llama el SweetAlert del script notification
-        register_deleteSwal(title, coloca, text, icon, rute)
-    })
+    // $('#acervoTable').on('click', 'tbody #info_data td a#remove_register', function (e) {
+    //     let data = $(this).closest('#info_data').data(),
+    //         coloca = data['coloca'],
+    //         title = data['title'],
+    //         formato = data['formato'],
+    //         text = "El registro no se podrá recuperar",
+    //         icon = "warning",
+    //         rute = '/acervo/delete_acervo/'
+    //     console.log(coloca);
+    //     
+    //     console.log(formato);
+    //     
+    //     // Llama el SweetAlert del script notification
+    //     register_deleteSwal(title, coloca, text, icon, rute, formato)
+    // })
 
     // Función para edición
     $('#acervoTable').on('click', 'tbody #info_data td a#edit_register', function () {
@@ -258,36 +263,39 @@ $(document).ready(function () {
 
     $('#btnModalUpdate').on('click', function (event) {
         // Busca que no exista un ejemplar igual
-        data = {
-            'id': $('input[name=id]').val(),
-            'col': $('input[name=colocacion]').val(),
-            'format': $('select[name=formato]').val()
-        }
-        $.ajax({
-            url: '/acervo/get_match/',
-            data: data,
-            type: 'GET',
-            success: function (response) {
-                if (response['respuesta'] == 1) {
-                    event.preventDefault();
-                    process('¡Ya existe un elemento con esta colocación!');
-                } else {
-                    $('#acervo_add #tbl_addBook').attr('action', "/acervo/edit_acervo/")
-                    $('#tbl_addBook').submit();
-                }
-            },
-            error: function (error) { console.log(error); }
-        });
+        $('#acervo_add #tbl_addBook').attr('action', "/acervo/edit_acervo/")
+        $('#tbl_addBook').submit();
+        // data = {
+        //     'id': $('input[name=id]').val(),
+        //     'col': $('input[name=colocacion]').val(),
+        //     'format': $('select[name=formato]').val()
+        // }
+        // $.ajax({
+        //     url: '/acervo/get_match/',
+        //     data: data,
+        //     type: 'GET',
+        //     success: function (response) {
+        //         if (response['respuesta'] == 1) {
+        //             event.preventDefault();
+        //             process('¡Ya existe un elemento con esta colocación!');
+        //         } else {
+        //             $('#acervo_add #tbl_addBook').attr('action', "/acervo/edit_acervo/")
+        //             $('#tbl_addBook').submit();
+        //         }
+        //     },
+        //     error: function (error) { console.log(error); }
+        // });
     });
 
     // Función para el borrado de registros
     $('#btnModalDelete').on('click', function () {
         let colocacion = $('input[name="colocacion"]').val();
+        let format = $('select[name="formato"]').val();
         let title = 'Eliminar';
         let text = 'El registro no se podrá recuperar';
         let icon = 'question';
-        let rute = 'acervo/delete_acervo/';
-        register_deleteSwal(title, colocacion, text, icon, rute)
+        let rute = 'acervo/delete_acervo';
+        register_deleteSwal(title, colocacion, text, icon, rute, format)
     });
 
     // Manejo para cambio de tabs

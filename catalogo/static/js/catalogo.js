@@ -17,7 +17,7 @@ $(document).ready(function() {
         
     });
     
-    // Función para el borrado de elementos
+    // Función cambio de estado de los prestamos
     $('#prestamoTableAll').on('click', 'tbody td a#delivered', function (e) {
         let data = $(this).closest('#info_book').data();
         let cve_prestamo = data['cve_prestamo'];
@@ -65,7 +65,8 @@ $(document).ready(function() {
             formatoejem = $('input[name=formatoejem]').val(),
             cantidad = $('input[name=cantidad_i]').val(),
             carrera_grupo = $('input[name=carrera_grupo]').val();
-         // Obliga a esperar que la información este completa
+        
+        // Obliga a esperar que la información este completa
         if(matricula == '' && nom_alumno == '' && carrera_grupo == ''){
             event.preventDefault();
         }
@@ -73,8 +74,7 @@ $(document).ready(function() {
         if (cantidad <= 0) {
             event.preventDefault();
             process('¡Debes ingresar una cantidad mayor a 0!');
-        } 
-        else {
+        } else {
             event.preventDefault();
             data = {
                 "formatoejem": formatoejem,
@@ -92,7 +92,9 @@ $(document).ready(function() {
                         $('#tbl_registroP').submit()
                     }
                 },
-                error: function (error) { console.log(error); }
+                error: function (error) { 
+                    console.log(error); 
+                }
             });
         }
     

@@ -407,10 +407,8 @@ def edit_portada(request):
         colocacion = ''
         for r in request.FILES:
             splt = r.split('-')
-            data[cont] = [r, request.POST.get(f"titulo-{splt[1]}")]
+            data[cont] = [r, request.POST.get(f"formato-{splt[1]}")]
             cont += 1
-
-        print(data)
         # Se realiza el guardado de la imagen con el libro indicado
         for d in range(len(data)):
             colocacion = request.POST.get('colocacion')  # Obtén la colocación del formulario
@@ -420,8 +418,7 @@ def edit_portada(request):
                 return redirect('catalogo:cargar_portada')  # Redirige con un mensaje de error
 
             # Buscar el registro en la base de datos por `colocacion`
-            acervo_update = acervo_model.objects.filter(colocacion=colocacion, titulo=data[d+1][1]).first()
-
+            acervo_update = acervo_model.objects.filter(colocacion=colocacion, formato=data[d+1][1]).first()
             if acervo_update:
                 # Almacenar el nuevo archivo de portada}
                 acervo_update.base64 = convert_base64(nueva_portada)

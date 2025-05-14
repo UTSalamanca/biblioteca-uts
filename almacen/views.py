@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from .models import acervo_model
+from catalogo.models import model_catalogo
 from .forms import registro_form
 from django.contrib import messages
 from static.helpers import *
@@ -125,7 +126,7 @@ def acervo_registro(request):
             # Valida que la colocación no sea repetida
             acervo_exist = acervo_model.objects.filter(colocacion=form.cleaned_data['colocacion'], formato=form.cleaned_data['formato'])
             if acervo_exist.exists():
-                messages.add_message(request, messages.INFO, 'Ya existe un elemento con esta colocación')
+                messages.add_message(request, messages.INFO, 'Ya existe un elemento con esta colocación y formato')
                 return redirect('acervo:acervo')
                 
             titulo = form.cleaned_data['titulo']
@@ -170,7 +171,7 @@ def acervo_registro(request):
         return redirect('acervo:acervo')
 
 @groups_required('Biblioteca')
-def delete_acervo(request, col):
+def delete_acervo(request, col, format):
     """Función para el borrado de registros de base de datos
 
     Args:
@@ -180,8 +181,18 @@ def delete_acervo(request, col):
     Returns:
         Void
     """
-    acervo_delete = acervo_model.objects.filter(colocacion=col).first()
-    acervo_delete.delete()
+    acervo_exist = acervo_model.objects.filter(colocacion=col, formato=format).first()
+    if acervo_exist:
+        prestados = model_catalogo.objects.filter(colocacion=col, formatoejem=format)
+        if prestados:
+            for prestado in prestados:
+                if prestado.cantidad_m > 0:
+                    messages.add_message(request, messages.INFO, 'Hay ejemplar(es) prestado(s). No es posible borrar')
+                    return redirect(to="acervo:acervo")
+    else:
+        messages.add_message(request, messages.ERROR, '¡Ejemplar no encontrado!')
+        return redirect(to="acervo:acervo")
+    acervo_exist.delete()
     messages.add_message(request, messages.SUCCESS, 'Registro eliminado')
     return redirect(to="acervo:acervo")
 
@@ -211,9 +222,7 @@ def edit_acervo(request):
     """
     if request.method == 'POST':
         form = registro_form(request.POST)
-        print('llega edit_acervo')
         if form.is_valid():
-            print(form.cleaned_data['id'])
             # Verifica que no exista un duplicado con la misma colocación y formato
             duplicado = acervo_model.objects.filter(
                 colocacion=form.cleaned_data['colocacion'], 

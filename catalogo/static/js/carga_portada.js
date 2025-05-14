@@ -64,6 +64,7 @@ $('#btn_search_portada').on('click', function (e) {
     }
     delete_struc()
     colocacion = $('input[name=colocacion').val();
+    $.LoadingOverlay("show");
     $.ajax({
         url: '/catalogo/search_book/',
         data: { "colocacion": colocacion },
@@ -89,9 +90,10 @@ $('#btn_search_portada').on('click', function (e) {
                 container.append(newElement);
                 newElement.animate({ opacity: 1 }, 800); // Aparece lentamente
             });
-
+            $.LoadingOverlay("hide")
         },
         error: function (error) {
+            $.LoadingOverlay("hide")
             console.log(error);
         }
     });

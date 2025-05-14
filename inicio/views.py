@@ -339,6 +339,7 @@ def periodo_consulta(periodo):
         'ciclo': ciclo
     }
 
+@groups_required('Biblioteca')
 def report(request, periodo):
     """Recopila datos para la generación del reporte mensual
 
@@ -504,39 +505,43 @@ def report(request, periodo):
     prestados_ext = {}
     noDevueltos_int = {}
     noDevueltos_ext = {}
-    for carrera in conteo_ejemplares:
-        for prestamo in prestamos:
+    for prestamo in prestamos:
+        for carrera in conteo_ejemplares:
             if str(prestamo.fechaP) >= fech_ini and str(prestamo.fechaP) <= fech_fin:
                 # Libros prestados
-                if carrera in prestamo.colocacion:
-                    if prestamo.tipoP == 'Interno':
-                        if carrera in prestados_int:
-                            # Obtiene dato anterior de prestamos
-                            cant_ant = prestados_int[carrera]
+                if not carrera in prestamo.colocacion:
+                    continue
+                if prestamo.tipoP == 'Interno':
+                    if carrera in prestados_int:
+                        # Obtiene dato anterior de prestamos
+                        cant_ant = prestados_int[carrera]
+                        prestados_int[carrera] = cant_ant + prestamo.cantidad_i
+                        if prestamo.entrega == 'Entregado':
                             # Obtiene dato anterior de no devueltos
                             cant_ant_nd = noDevueltos_int[carrera]
-                            prestados_int[carrera] = cant_ant + prestamo.cantidad_i
                             noDevueltos_int[carrera] = cant_ant_nd + prestamo.cantidad_m
-                        else:
-                            # Se agrega dato en prestados
-                            prestados_int[carrera] = prestamo.cantidad_i
+                    else:
+                        # Se agrega dato en prestados
+                        prestados_int[carrera] = prestamo.cantidad_i
+                        if prestamo.entrega == 'Entregado':
                             # Se agrega datos en no devueltos
                             noDevueltos_int[carrera] = prestamo.cantidad_m
-                    elif prestamo.tipoP == 'Externo':
-                        if carrera in prestados_ext:
-                            # Obtiene dato anterior de prestamos
-                            cant_ant = prestados_ext[carrera]
+                elif prestamo.tipoP == 'Externo':
+                    if carrera in prestados_ext:
+                        # Obtiene dato anterior de prestamos
+                        cant_ant = prestados_ext[carrera]
+                        # Agrega nuevos valores
+                        prestados_ext[carrera] = cant_ant + prestamo.cantidad_i
+                        if prestamo.entrega == 'Entregado':
                             # Obtiene dato anterior de no devueltos
                             cant_ant_nd = noDevueltos_ext[carrera]
-                            # Agrega nuevos valores
-                            prestados_ext[carrera] = cant_ant + prestamo.cantidad_i
                             noDevueltos_ext[carrera] = cant_ant_nd + prestamo.cantidad_m
 
-                        else:
-                            prestados_ext[carrera] = prestamo.cantidad_i
+                    else:
+                        prestados_ext[carrera] = prestamo.cantidad_i
+                        if prestamo.entrega == 'Entregado':
                             noDevueltos_ext[carrera] = prestamo.cantidad_m
             
-
     prestamo_conc = {
         "prestados_int": prestados_int,
         "prestados_ext": prestados_ext,
