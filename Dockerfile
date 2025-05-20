@@ -1,61 +1,38 @@
-FROM python:3.12.1
+FROM python:3.12.1-slim
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-ENV DEBIAN_FRONTEND noninteractive
-USER root
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    DEBIAN_FRONTEND=noninteractive
 
-# Añade odbcinst.ini
-COPY odbcinst.ini /etc/
+ADD odbcinst.ini /etc/
 
-# Instala dependencias del sistema
-RUN apt-get update -y && \
-    apt-get install -y --no-install-recommends at supervisor curl gnupg unixodbc unixodbc-dev tdsodbc freetds-common freetds-bin freetds-dev \
-    postgresql python3-scipy python3-numpy python3-pandas && \
-    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
-    curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
-    apt-get update && ACCEPT_EULA=Y apt-get install -y mssql-tools msodbcsql17 && \
-    # Añadir mssql-tools al PATH de forma global
-    echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> /etc/bash.bashrc && \
-    echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> /etc/environment && \
-    # Limpiar caché de apt para reducir tamaño de imagen
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Instala el paquete mssql-django
-RUN pip install --no-cache-dir mssql-django
-
-# Crea el directorio de trabajo y de configuraciones de Supervisor
+RUN apt-get update -y && apt-get install -y \
+    curl gnupg git unixodbc unixodbc-dev tdsodbc freetds-common \
+    freetds-bin freetds-dev postgresql supervisor
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
+RUN apt-get update -y && apt-get install -y unixodbc unixodbc-dev tdsodbc freetds-common freetds-bin freetds-dev postgresql
+RUN apt-get update && ACCEPT_EULA=Y apt-get -y install mssql-tools msodbcsql17
+RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
+RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+RUN apt-get update
 RUN mkdir /code
-RUN mkdir -p /etc/supervisor/conf.d
-
-RUN mkdir -p /var/run/supervisor
-
-# Copia el archivo requirements.txt al directorio de trabajo
-COPY ./requirements.txt /code/
-
-# Establece el directorio de trabajo
 WORKDIR /code
-
-# Instala dependencias de Python
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copia el resto del código de la aplicación a /code
+RUN mkdir -p /var/log/supervisor && \
+    chmod -R 777 /var/log/supervisor
+RUN mkdir -p /code/logs && \
+    chmod -R 777 /code/logs
+RUN mkdir -p /var/run && \
+    chmod -R 777 /var/run
 COPY . /code/
-
-# Copia los archivos de configuración de Supervisor
-COPY supervisord.conf /etc/supervisor/supervisord.conf
-COPY django_script.conf /etc/supervisor/conf.d/django_script.conf
-
-COPY init.sh /code/init.sh
-RUN chmod +x /code/init.sh
-
-RUN ln -sf /usr/share/zoneinfo/America/Mexico_City /etc/localtime && \
-    echo "America/Mexico_City" > /etc/timezone
-
-# Expone el puerto para la aplicación Django
+COPY ./requirements.txt /code/
+RUN pip install --no-cache-dir -r requirements.txt \
+ && pip install mssql-django numpy scipy pandas
+# Crear un usuario no root
+RUN useradd -ms /bin/bash userbiblioteca
+# Cambiar el propietario de los archivos al nuevo usuario
+RUN chown -R userbiblioteca:userbiblioteca /code /var/run
+# Cambiar al nuevo usuario
+USER userbiblioteca
 EXPOSE 8080
-
-# Ejecuta supervisord con el archivo de configuración principal
-CMD ["bash", "/code/init.sh"]
-
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord-local.conf"]

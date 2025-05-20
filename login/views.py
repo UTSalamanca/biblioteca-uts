@@ -33,14 +33,14 @@ def enviar_codigo_verificacion(request, usuario):
     
     # Dirección de correo (modificar si es necesario)
     # print(settings.DEBUG)
-    # if settings.DEBUG:
-    #     email = 'jrazo@utsalamanca.edu.mx'
-    # else:
-    email = f"{usuario.login}@utsalamanca.edu.mx"
+    if settings.DEBUG:
+        email = 'jrazo@utsalamanca.edu.mx'
+    else:
+        email = f"{usuario.login}@utsalamanca.edu.mx"
 
     # Enviar correo
     user_email = email
-    subject = "SIESAV - VERIFICACIÓN DE CUENTA"
+    subject = "BIBLIOTECA DIGITAL UTS - VERIFICACIÓN DE CUENTA"
     html_content = render_to_string('login/notification_verify_account.html', context)
 
     email = EmailMessage(subject, html_content, to=[user_email])

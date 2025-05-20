@@ -134,10 +134,11 @@ $(document).ready(function () {
             state = data['state'],
             formato = data['formato'],
             base64 = data['base64']
+      
         // Se agrega todo el elemento html iterando la información obtenida
         $('#show_more').append(struct_modal(title, autor, editorial, cantidad, colocacion, edicion, año, type_adqui, state, formato));
         // Se carga el base64 para la imagen
-        if (base64 != '') {
+        if (data['base64'] != 'None') {
             $('#more_info_modal #content_portada_default').attr('style', 'display:none');
             $('#more_info_modal #content_portada').attr('style', 'display:block');
             $('#more_info_modal #content_portada').attr('src', 'data:image/png;base64,' + base64);
@@ -150,7 +151,7 @@ $(document).ready(function () {
             // Se realiza el borrado de los elementos hijo de la etiqueta indicada
             $('#show_more').children().remove();
             // $('#content_portada').removeAttr('src');
-            if (base64 != '') {
+            if (data['base64'] != 'None') {
                 $('#more_info_modal #content_portada_default').attr('style', 'display:block');
                 $('#more_info_modal #content_portada').attr('style', 'display:none');
                 $('#content_portada').removeAttr('src');
@@ -310,4 +311,3 @@ $(document).ready(function () {
     // Función para realizar salto de input con Enter
     tabIndex_form('acervo_add');
 })
-

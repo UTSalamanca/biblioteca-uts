@@ -98,6 +98,15 @@ MIDDLEWARE = [
     'session_security.middleware.SessionSecurityMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://0.0.0.0:8004",
+    "http://127.0.0.1:8004",
+    "http://localhost:8004",
+    "http://localhost:8080",
+    "https://biblioteca.utsalamanca.edu.mx",
+    # Otros orígenes permitidos aquí si es necesario
+]
+
 
 # Configuraciones de session security
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # O SESSION_SECURITY_INSECURE = True
@@ -217,11 +226,34 @@ LOGIN_URL = '/login/' # Cambia a la URL de tu vista personalizada.
 LOGIN_REDIRECT_URL = '/inicio/'  # Define a dónde redirigir tras un login exitoso.
 # LOGOUT_REDIRECT_URL = '/usuario/login/'  # Define a dónde redirigir tras cerrar sesión (opcional).
 
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.office365.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'tu_correo@outlook.com'
-# EMAIL_HOST_PASSWORD = 'tu_contraseña'
-# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# SMTP OFFICE 365
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = env('EMAIL_USE_TLS')
+EMAIL_TIMEOUT = os.getenv("APP_EMAIL_TIMEOUT", 60)
+
+# Configuración del cache usando Redis
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://biblioteca-redis:6379/1",  # El nombre del servicio en docker-compose
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# Redis como backend de sesiones
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+SESSION_COOKIE_AGE = 900  # 15 minutos
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True

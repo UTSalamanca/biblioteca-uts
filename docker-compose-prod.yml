@@ -1,0 +1,49 @@
+services:
+  app-biblioteca:
+    build:
+      context: .
+      dockerfile: DockerfileProd
+    image: biblioteca:v1.0
+    container_name: biblioteca
+    restart: always
+    command: supervisord -c /etc/supervisor/supervisord.conf
+    expose:
+      - 8004
+    volumes:
+      - ./supervisor/supervisord.conf:/etc/supervisor/supervisord.conf
+    networks:
+      - biblioteca-network
+    depends_on:
+      - redis
+
+  nginx:
+    image: nginx:latest
+    container_name: biblioteca-nginx
+    restart: always
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - .:/code
+    ports:
+      - "8004:8004"
+    networks:
+      - biblioteca-network
+    depends_on:
+      - app-biblioteca
+
+  redis:
+    image: redis:alpine
+    container_name: biblioteca-redis
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/data
+    networks:
+      - biblioteca-network
+
+volumes:
+  redis-data:
+
+networks:
+  biblioteca-network:
+    driver: bridge

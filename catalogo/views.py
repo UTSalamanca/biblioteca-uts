@@ -330,7 +330,6 @@ def prestamo_registro(request):
         # return HttpResponse("¡El proceso no se pudo realizar!", status=400)
 
 # Función para convertir documento a base64
-@groups_required('Biblioteca')
 def convert_base64(img):
     """Función para la conversión de una imagen en base64
 

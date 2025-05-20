@@ -77,9 +77,17 @@ class UsuarioAcceso(AbstractBaseUser, PermissionsMixin):
     @property
     def is_superuser(self):
         return self.superuser
+    
+    @property
+    def nombre_completo(self):
+        try:
+            persona = Persona.objects.get(cve_persona=self.cve_persona)
+            return persona.nombre_completo()
+        except:
+            return None
 
     class Meta:
-        # managed = False
+        managed = False
         # abstract = True
         db_table = 'sistema_usuario'
         verbose_name = 'Acceso Usuario'

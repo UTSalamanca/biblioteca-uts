@@ -33,11 +33,12 @@
 <body class="hold-transition sidebar-mini layout-fixed loaderHidden" id="bodyMaster">
     
     <div class="wrapper">
-        <!-- Main Sidebar Container -->
-        {% include 'sidebar.html' %}
         <!-- Navbar -->
         {% include 'header.html' %}
         <!-- /.navbar -->
+         
+        <!-- Main Sidebar Container -->
+        {% include 'sidebar.html' %}
     
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
@@ -47,10 +48,10 @@
         <!-- /.content-wrapper -->
     </div>
 
-     <!-- SweetAlert2 v11.11.0 -->
-     <script src="{% static 'lib/sweetalert2/sweetalert2.min.js' %}"></script>
      <!-- jQuery -->
      <script src="{% static 'lib/plugins/jquery/jquery.min.js' %}"></script>
+     <!-- SweetAlert2 v11.11.0 -->
+     <script src="{% static 'lib/sweetalert2/sweetalert2.min.js' %}"></script>
      <!-- Overlay jQuey -->
      <script src="{% static 'lib/jquery-loading-overlay-2.1.7/js/loadingoverlay.min.js' %}"></script>
      <script src="{% static 'js/base.js' %}"></script>

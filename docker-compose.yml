@@ -1,20 +1,27 @@
 services:
-    biblioteca_uts:
-        logging:
-            driver: "json-file"
-            options:
-                max-size: "10m"
-        build: .
-        image: biblioteca_uts:v1.0
-        container_name: biblioteca-uts
-        restart: always
-        # env_file:
-        #     - .env
-        # command: python manage.py runserver --insecure 0.0.0.0:8080
-        # command: python manage.py runserver 0.0.0.0:8080
-        volumes:
-            - .:/code
-        ports:
-            - 8080:8080
+  app-biblioteca:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: biblioteca-local:v1.0
+    container_name: biblioteca
+    restart: always
+    command: >
+        bash -c "python manage.py runserver 0.0.0.0:8080 & supervisord -c /etc/supervisor/supervisord-local.conf"
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/code
+      - ./supervisor/supervisord-local.conf:/etc/supervisor/supervisord-local.conf
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: biblioteca-redis
+    restart: always
+    ports:
+      - 6379:6379
+
 volumes:
     .:
