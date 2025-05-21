@@ -571,7 +571,8 @@ def table_reporte_estadias(sheet, data):
     # Se agrega filtro en celda finales
     sheet.auto_filter.ref = f"B{new_cell}:C{celda}"
     # Suma de datos en columna
-    sheet[f"D{celda + 1}"] = f"=SUM(D{cont_cell + 3}:D{celda})"
+    # sheet[f"D{celda + 1}"] = f"=SUM(D{cont_cell + 3}:D{celda})"
+    sheet[f"D{celda + 1}"] = "=SUM(D" + str(cont_cell + 3) + ":D" + str(celda) + ")"
     # Numero de vistas por proyecto
     sheet[f"A{celda + 1}"] = "Total"
     sheet[f"A{celda + 1}"].alignment = centrado
