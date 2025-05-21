@@ -346,8 +346,8 @@ def report(request, periodo):
     Args:
         request (object): Información sobre la solicitud HTTP entrante
         periodo (integer): Bandera para indicar el mes a consultar 
-        1 = mes actual
-        2 = mes anterior
+        0 = mes actual
+        1 = mes anterior
 
     Returns:
         instancia: Retorna instancia de la creación del reporte, para que pueda ser descargado.
