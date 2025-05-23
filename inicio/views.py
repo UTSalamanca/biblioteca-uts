@@ -339,7 +339,6 @@ def periodo_consulta(periodo):
         'ciclo': ciclo
     }
 
-@groups_required('Biblioteca')
 def report(request, periodo):
     """Recopila datos para la generación del reporte mensual
 

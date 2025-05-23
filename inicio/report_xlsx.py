@@ -36,7 +36,7 @@ def reporte_info(sheet, data):
     sheet.merge_cells('A12:H12')
     sheet['A12'].font = Font(color = '000000', bold=True, size=12)
     sheet['A12'].fill = PatternFill('solid', start_color="d3c905")
-    sheet['A12'] = 'CONSULTAS  EN EL CICLO DEL MES DE: ' + data['ciclo']
+    sheet['A12'] = 'CONSULTAS  EN EL CICLO DEL MES DE: ' + str(data['ciclo'])
 
 # def headers_by_tabla():
 def get_borders(tipo):
@@ -100,7 +100,7 @@ def table_acervo(sheet, data):
         sheet[f"{c}13"].font = Font(color = '000000', bold=True, size=12)
     # Unión de celdas
     sheet.merge_cells('A11:F11')
-    sheet['A11'] = 'REPORTE GENERAL DE ACERVO BIBLIOGRÁFICO: ' + data['ciclo']
+    sheet['A11'] = 'REPORTE GENERAL DE ACERVO BIBLIOGRÁFICO: ' + str(data['ciclo'])
 
     # Crea encabezados de la tabla
     sheet['A12'].alignment = centrado
@@ -295,7 +295,7 @@ def table_acervo(sheet, data):
         sheet[f"{celda}{new_cell + 2}"].border = get_borders('all')
         sheet[f"{celda}{new_cell + 2}"].alignment = centrado
     # Agrega titulos
-    sheet[f"A{new_cell}"] = "ADQUISICIÓN DE ACERVO BIBLIOGRAFICO MES DE: " + data['ciclo']
+    sheet[f"A{new_cell}"] = "ADQUISICIÓN DE ACERVO BIBLIOGRAFICO: " + str(data['ciclo'])
      # Crea encabezados de la tabla
      # Titulo 1
     sheet[f"A{new_cell + 1}"].alignment = centrado
@@ -441,7 +441,7 @@ def table_reporte_estadias(sheet, data):
         sheet[f"{c}12"].alignment = centrado
     # Unión de celdas
     sheet.merge_cells('A11:E11')
-    sheet['A11'] = 'REPORTE GENERAL DOCUMENTOS DE ESTADÍA: ' + data['ciclo']
+    sheet['A11'] = 'REPORTE GENERAL DOCUMENTOS DE ESTADÍA: ' + str(data['ciclo'])
     # Ajuste de ancho de celda
     sheet.column_dimensions['C'].width = 70
     # Crea encabezados de la tabla
@@ -536,7 +536,7 @@ def table_reporte_estadias(sheet, data):
         sheet[f"{c}{new_cell}"].alignment = centrado
 
     sheet.merge_cells(f"A{new_cell - 1}:D{new_cell - 1}")
-    sheet[f"A{new_cell - 1}"] = 'REPORTE GENERAL DE VISTAS POR PROYECTO: ' + data['ciclo']
+    sheet[f"A{new_cell - 1}"] = 'REPORTE GENERAL DE VISTAS POR PROYECTO: ' + str(data['ciclo'])
     sheet[f"A{new_cell - 1}"].alignment = centrado
     # Aumenta el ancho de la fila
     sheet.row_dimensions[new_cell].height = 25
@@ -553,34 +553,34 @@ def table_reporte_estadias(sheet, data):
     sheet[f"D{new_cell}"] = "No. vistas"
     sheet[f"D{new_cell}"].alignment = centrado
     # Se agrega la información
-    contador_vistas = 1
-    for vista in data['cont_vistas_reporte']:
-        carrera = data['cont_vistas_reporte'][vista][0]
-        no_vistas = data['cont_vistas_reporte'][vista][1]
-        # Nuevo numero de celda
-        celda = new_cell + contador_vistas
-        sheet[f"A{celda}"] = contador_vistas
-        sheet[f"A{celda}"].alignment = centrado
-        sheet[f"B{celda}"] = vista
-        sheet[f"B{celda}"].alignment = centrado
-        sheet[f"C{celda}"] = carrera
-        sheet[f"C{celda}"].alignment = centrado
-        sheet[f"D{celda}"] = no_vistas
-        sheet[f"D{celda}"].alignment = centrado
-        contador_vistas += 1
-    # Se agrega filtro en celda finales
-    sheet.auto_filter.ref = f"B{new_cell}:C{celda}"
-    # Suma de datos en columna
-    # sheet[f"D{celda + 1}"] = f"=SUM(D{cont_cell + 3}:D{celda})"
-    sheet[f"D{celda + 1}"] = "=SUM(D" + str(cont_cell + 3) + ":D" + str(celda) + ")"
-    # Numero de vistas por proyecto
-    sheet[f"A{celda + 1}"] = "Total"
-    sheet[f"A{celda + 1}"].alignment = centrado
-    for c in celdas:
-        sheet[f"{c}{celda + 1}"].fill = PatternFill('solid', start_color="a0aab9")
-        sheet[f"{c}{celda + 1}"].font = Font(color = '000000', bold=True, size=12)
-        sheet[f"{c}{celda + 1}"].border = get_borders('all')
-        sheet[f"{c}{celda + 1}"].alignment = centrado
+    if data['cont_vistas_reporte']:
+        contador_vistas = 1
+        totalizadorVistas = 0
+        for vista in data['cont_vistas_reporte']:
+            carrera = data['cont_vistas_reporte'][vista][0]
+            no_vistas = data['cont_vistas_reporte'][vista][1]
+            celda = new_cell + contador_vistas
+            sheet[f"A{celda}"] = contador_vistas
+            sheet[f"A{celda}"].alignment = centrado
+            sheet[f"B{celda}"] = vista
+            sheet[f"B{celda}"].alignment = centrado
+            sheet[f"C{celda}"] = carrera
+            sheet[f"C{celda}"].alignment = centrado
+            sheet[f"D{celda}"] = no_vistas
+            sheet[f"D{celda}"].alignment = centrado
+            contador_vistas += 1
+            totalizadorVistas += no_vistas
+
+        sheet.auto_filter.ref = f"B{new_cell}:C{celda}"
+        sheet[f"A{celda + 1}"] = "Total"
+        sheet[f"A{celda + 1}"].alignment = centrado
+        sheet[f"D{celda + 1}"] = totalizadorVistas
+        for c in celdas:
+            sheet[f"{c}{celda + 1}"].fill = PatternFill('solid', start_color="a0aab9")
+            sheet[f"{c}{celda + 1}"].font = Font(color = '000000', bold=True, size=12)
+            sheet[f"{c}{celda + 1}"].border = get_borders('all')
+            sheet[f"{c}{celda + 1}"].alignment = centrado
+
 
 def table_prestamos(sheet, data):
     """Crea tabla de prestamos
@@ -608,7 +608,7 @@ def table_prestamos(sheet, data):
         sheet[f"{c}13"].alignment = centrado
     # Unión de celdas
     sheet.merge_cells('A11:F11')
-    sheet['A11'] = 'REPORTE DE PRESTAMOS: ' + data['ciclo']
+    sheet['A11'] = 'REPORTE DE PRESTAMOS: ' + str(data['ciclo'])
     # Ajuste de ancho de celda
    # Crea encabezados de la tabla
     sheet['A12'].alignment = centrado
@@ -756,22 +756,17 @@ def create_excel(data):
     return book
 
 def generate_report(data):
-    try:
-        # Crear el archivo Excel
-        book = create_excel(data)
-        # Configurar la respuesta HTTP para la descarga
-        response = HttpResponse(
-            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        )
-        response['Content-Disposition'] = 'attachment; filename="Reporte mensual '+ data['ciclo'] +'.xlsx"'
+   
+    # Crear el archivo Excel
+    book = create_excel(data)
+    # Configurar la respuesta HTTP para la descarga
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename="Reporte mensual '+ str(data['ciclo']) +'.xlsx"'
 
-        # Guardar el archivo Excel directamente en la respuesta
-        book.save(response)
+    # Guardar el archivo Excel directamente en la respuesta
+    book.save(response)
 
-        return response
-    except FileNotFoundError as e:
-        # Manejo específico para errores relacionados con la imagen
-        return HttpResponse(str(e), status=404)
-    except Exception as e:
-        # Manejo genérico de errores
-        return HttpResponse(f"Error al generar el reporte: {str(e)}", status=500)
+    return response
+    

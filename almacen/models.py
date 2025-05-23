@@ -21,8 +21,8 @@ class acervo_model(models.Model):
         DISCO = 'Disco', _('Disco')
         REVISTA = 'Revista', _('Revista')
 
-    titulo = models.CharField(max_length=100,verbose_name="titulo", null=True, blank=True)
-    autor = models.CharField(max_length=100,verbose_name="Autor", null=True, blank=True)
+    titulo = models.CharField(max_length=200,verbose_name="titulo", null=True, blank=True)
+    autor = models.CharField(max_length=200,verbose_name="Autor", null=True, blank=True)
     editorial = models.CharField(max_length=100,verbose_name="Editorial", null=True, blank=True)
     cant = models.IntegerField(verbose_name="Cantidad", null=True, blank=True)
     colocacion = models.CharField(max_length=100,verbose_name="Colocación", null=True, blank=True)

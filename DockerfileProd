@@ -35,4 +35,3 @@ RUN chown -R userbiblioteca:userbiblioteca /code /var/run
 # Cambiar al nuevo usuario
 USER userbiblioteca
 EXPOSE 8004
-CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]

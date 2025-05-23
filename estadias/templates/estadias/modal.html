@@ -69,7 +69,11 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="fas fa-chalkboard-teacher"></i></span>
                 </div>
+                {% if 'Biblioteca' in grupo_control %}
+                {{ form.asesor_academico }}
+                {% else %}
                 <input type="text" name="asesor_academico" value="{{ persona }}" class="form-control" readonly>
+                {% endif %}
               </div>
               <label class="text-muted" for="edito">Asesor Organizacional</label>
               <div class="input-group mb-3">

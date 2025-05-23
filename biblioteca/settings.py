@@ -102,7 +102,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://0.0.0.0:8004",
     "http://127.0.0.1:8004",
     "http://localhost:8004",
-    "http://localhost:8080",
     "https://biblioteca.utsalamanca.edu.mx",
     # Otros orígenes permitidos aquí si es necesario
 ]
@@ -147,8 +146,19 @@ WSGI_APPLICATION = 'biblioteca.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'mssql',
+        'HOST': os.environ.get('DB_HOST_BIBLIOTECA'),
+        'NAME': os.environ.get('DB_NAME_BIBLIOTECA'),
+        'USER': os.environ.get('DB_USER_BIBLIOTECA'),
+        'PASSWORD': os.environ.get('DB_PASS_BIBLIOTECA'),
+        'PORT': os.environ.get('DB_PORT_BIBLIOTECA'),
+        'OPTIONS':  {
+            'driver': 'FreeTDS',
+            'unicode_results': True,
+            'host_is_server': True,
+            'driver_supports_utf8': True,
+            'extra_params': 'tds_version=7.4',
+        }
     },
       'sito': {
         'ENGINE': 'mssql',
@@ -158,10 +168,15 @@ DATABASES = {
         'PASSWORD': os.environ.get('DB_PASS_SITO'),
         'PORT': os.environ.get('DB_PORT_SITO'),
         'OPTIONS':  {
-            'driver': 'ODBC Driver 17 for SQL Server'
+            'driver': 'FreeTDS',
+            'unicode_results': True,
+            'host_is_server': True,
+            'driver_supports_utf8': True,
+            'extra_params': 'tds_version=7.4',
         }
     }
 }
+
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 

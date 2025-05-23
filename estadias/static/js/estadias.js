@@ -124,13 +124,17 @@ $(document).ready(function () {
     })
 
 
-    function actualizarEstadia(estadiaId) {
+    window.actualizarEstadia = function (estadiaId) {
         $.ajax({
             url: '/estadias/insert_consult/',
-            data: { "user_id": estadiaId[0], "name_reporte": estadiaId[1], "id_reporte": estadiaId[2] },
+            data: {
+                "user_id": estadiaId[0],
+                "name_reporte": estadiaId[1],
+                "id_reporte": estadiaId[2]
+            },
             type: 'POST',
             headers: {
-                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value, // Incluye el token CSRF
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
             },
             success: function (response) {
                 console.log(response);
@@ -138,9 +142,8 @@ $(document).ready(function () {
             error: function (error) {
                 console.log(error);
             }
-        })
-        
-    }
+        });
+    };
 
     // Función para la busqueda de reportes
     function search_project() {

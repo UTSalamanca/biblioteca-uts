@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import model_estadias, register_view
 from .forms import estadias_form
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponseServerError
 from django.conf import settings
 from static.helpers import *
 from django.contrib import messages
@@ -110,7 +110,7 @@ def estadias_registro(request):
             # Validar existencia de proyectos
             exist_proyect = model_estadias.objects.filter(
                 matricula=request.POST['matricula'], 
-                proyecto=request.POST['proyecto'], 
+                proyecto=request.POST['proyecto'],
                 generacion=request.POST['generacion']
             )
             if exist_proyect:
@@ -205,7 +205,9 @@ def temporary_file_base_64(base_64_input):
     """
     # base64_string = base_64_input.strip().split(',')[1]
     decoded_bytes = base64.b64decode(base_64_input)
-    file_temp, path_temp = tempfile.mkstemp(suffix=".pdf", dir=settings.MEDIA_ROOT + "/")
+    # file_temp, path_temp = tempfile.mkstemp(suffix=".pdf", dir=settings.MEDIA_ROOT + "/")
+    file_temp, path_temp = tempfile.mkstemp(suffix=".pdf", dir=str(settings.MEDIA_ROOT))
+
     try:
         with os.fdopen(file_temp, 'wb') as tmp:
             tmp.write(decoded_bytes)
@@ -237,6 +239,7 @@ def view_report(request, report_rute):
         return render(request, 'estadias/iframe_pdf.html', {'reporte': ruta, "side_code":side_code, "alumno":id_reporte})
     except Exception as v:
         print(f"Error en al generar vista de PDF: {v}")
+        return HttpResponseServerError("Ocurrió un error al intentar mostrar el reporte.")
 
 def insert_consult(request):
     """Función para registrar en base de datos la consulta a un reporte

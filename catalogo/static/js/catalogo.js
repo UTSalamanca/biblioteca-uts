@@ -4,7 +4,7 @@ $(document).ready(function() {
         let portada = 'data:image/png;base64,';
         // Convierte la imagen
         // portada_base64 = data.base64 != 'None' ? portada + data.base64 : portada + default_img()
-        if (data.base64 != '') {
+        if (data['base64'] != 'None') {
             $('#defult_in_portada').attr("style","display:none;");
             $('#content_portada').attr("style","display:block;");
             $('#content_portada').attr("src",portada + data.base64);
