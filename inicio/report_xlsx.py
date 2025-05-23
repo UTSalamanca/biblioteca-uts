@@ -554,6 +554,7 @@ def table_reporte_estadias(sheet, data):
     sheet[f"D{new_cell}"].alignment = centrado
     # Se agrega la información
     contador_vistas = 1
+    totalizadorVistas = 0
     for vista in data['cont_vistas_reporte']:
         carrera = data['cont_vistas_reporte'][vista][0]
         no_vistas = data['cont_vistas_reporte'][vista][1]
@@ -568,13 +569,13 @@ def table_reporte_estadias(sheet, data):
         sheet[f"D{celda}"] = no_vistas
         sheet[f"D{celda}"].alignment = centrado
         contador_vistas += 1
+        totalizadorVistas += no_vistas
     # Se agrega filtro en celda finales
     sheet.auto_filter.ref = f"B{new_cell}:C{celda}"
-    # Suma de datos en columna
-    sheet[f"D{celda + 1}"] = f"=SUM(D{cont_cell + 3}:D{celda})"
     # Numero de vistas por proyecto
     sheet[f"A{celda + 1}"] = "Total"
     sheet[f"A{celda + 1}"].alignment = centrado
+    sheet[f"D{celda + 1}"] = totalizadorVistas
     for c in celdas:
         sheet[f"{c}{celda + 1}"].fill = PatternFill('solid', start_color="a0aab9")
         sheet[f"{c}{celda + 1}"].font = Font(color = '000000', bold=True, size=12)

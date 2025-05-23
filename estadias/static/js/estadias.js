@@ -124,41 +124,6 @@ $(document).ready(function () {
     })
 
 
-    function actualizarEstadia(estadiaId) {
-        $.ajax({
-            url: '/estadias/insert_consult/',
-            data: { "user_id": estadiaId[0], "name_reporte": estadiaId[1], "id_reporte": estadiaId[2] },
-            type: 'POST',
-            headers: {
-                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value, // Incluye el token CSRF
-            },
-            success: function (response) {
-                console.log(response);
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        })
-        
-    }
-
-    // Función para la busqueda de reportes
-    function search_project() {
-        let data_search = $('input[name=buscar]').val();
-        console.log(data_search);
-        $.ajax({
-            url: '/estadias/getReporteFilter/',
-            data: { "search": data_search },
-            type: 'GET',
-            success: function (response) {
-                console.log(response);
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        })
-    }
-
     // Función genera un delay
     var sleepES5 = function(ms){
         var esperarHasta = new Date().getTime() + ms;
@@ -176,3 +141,37 @@ $(document).ready(function () {
     // Función para realizar salto de input con Enter
     tabIndex_form('modal_registro', true);
 });
+
+function actualizarEstadia(estadiaId) {
+    $.ajax({
+        url: '/estadias/insert_consult/',
+        data: { "user_id": estadiaId[0], "name_reporte": estadiaId[1], "id_reporte": estadiaId[2] },
+        type: 'POST',
+        headers: {
+            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value, // Incluye el token CSRF
+        },
+        success: function (response) {
+            console.log(response);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    })
+    
+}
+
+// Función para la busqueda de reportes
+function search_project() {
+    let data_search = $('input[name=buscar]').val();
+    $.ajax({
+        url: '/estadias/getReporteFilter/',
+        data: { "search": data_search },
+        type: 'GET',
+        success: function (response) {
+            console.log(response);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    })
+}
