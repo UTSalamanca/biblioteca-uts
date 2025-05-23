@@ -22,7 +22,7 @@ def index_inicio(request):
     """
     # Se asigna el código para el focus en el sidebar
     side_code = 100
-    if request.user.groups.filter(name='Alumno').exists():
+    if request.user.groups.filter(name='Biblioteca').exists():
         # Se obtienen todos los datos del acervo
         datos = acervo_model.objects.all()
         # Se realiza el conteo de todos los libros
@@ -339,7 +339,7 @@ def periodo_consulta(periodo):
         'ciclo': ciclo
     }
 
-@groups_required('Alumno')
+@groups_required('Biblioteca')
 def report(request, periodo):
     """Recopila datos para la generación del reporte mensual
 
