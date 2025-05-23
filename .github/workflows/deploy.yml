@@ -1,0 +1,40 @@
+name: Despliegue simple a producción
+
+on:
+  push:
+    branches:
+      - main  # Cambia si usas otra rama
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Navegar al directorio del proyecto
+        run: cd /var/www/apps/biblioteca-uts
+
+      - name: Actualizar código desde GitHub (sin sobrescribir cambios locales)
+        run: |
+          cd /var/www/apps/biblioteca-uts
+          git pull origin main --rebase
+
+      - name: Reconstruir y levantar contenedores
+        run: |
+          cd /var/www/apps/biblioteca-uts
+          docker compose -f docker-compose-prod.yml up -d --build
+
+      - name: Aplicar migraciones solo si hay cambios en modelos (solo en base de datos 'default')
+        run: |
+          cd /var/www/apps/biblioteca-uts
+
+          docker compose exec app-biblioteca \
+            python manage.py makemigrations --check --dry-run --database=default > /dev/null 2>&1
+
+          if [ $? -eq 1 ]; then
+            echo "Cambios detectados en modelos. Ejecutando migraciones en 'default'..."
+            docker compose exec app-biblioteca python manage.py makemigrations --database=default
+            docker compose exec app-biblioteca python manage.py migrate --database=default
+          else
+            echo "No hay cambios en modelos. No se aplican migraciones."
+          fi
+
