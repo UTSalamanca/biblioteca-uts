@@ -21,7 +21,9 @@ jobs:
       - name: Reconstruir y levantar contenedores
         run: |
           cd /var/www/apps/biblioteca-uts
-          docker-compose -f docker-compose-prod.yml up -d --build
+          docker-compose -f docker-compose-prod.yml down
+          docker-compose -f docker-compose-prod.yml build --no-cache
+          docker-compose -f docker-compose-prod.yml up -d
 
       - name: Aplicar migraciones solo si hay cambios en modelos (solo en base de datos 'default')
         run: |
