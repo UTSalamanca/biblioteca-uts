@@ -24,7 +24,6 @@ RUN mkdir -p /code/logs && \
     chmod -R 777 /code/logs
 RUN mkdir -p /var/run && \
     chmod -R 777 /var/run
-COPY . .
 COPY ./requirements.txt /code/
 RUN pip install --no-cache-dir -r requirements.txt \
  && pip install mssql-django numpy scipy pandas

@@ -11,6 +11,7 @@ services:
       - 8004
     volumes:
       - ./supervisor/supervisord.conf:/etc/supervisor/supervisord.conf
+      - .:/code
     networks:
       - biblioteca-network
     depends_on:
