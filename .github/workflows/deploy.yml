@@ -26,6 +26,6 @@ jobs:
       - name: Ejecutar migraciones y collectstatic
         run: |
           cd /var/www/apps/biblioteca-uts
-          docker-compose exec app-biblioteca python manage.py makemigrations
-          docker-compose exec app-biblioteca python manage.py migrate --database=default
-          docker-compose exec app-biblioteca python manage.py collectstatic --noinput
+          docker-compose exec -T app-biblioteca python manage.py makemigrations
+          docker-compose exec -T app-biblioteca python manage.py migrate --database=default
+          docker-compose exec -T app-biblioteca python manage.py collectstatic --noinput
