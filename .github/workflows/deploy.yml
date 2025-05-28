@@ -21,11 +21,15 @@ jobs:
       - name: Ejecutar migraciones y collectstatic
         run: |
           cd /var/www/apps/biblioteca-uts
+          docker-compose -f docker-compose-prod.yml run --rm app-biblioteca bash -c "rm -rf /code/staticfiles/*"
           docker-compose -f docker-compose-prod.yml run --rm app-biblioteca python manage.py makemigrations
           docker-compose -f docker-compose-prod.yml run --rm app-biblioteca python manage.py migrate --database=default
           docker-compose -f docker-compose-prod.yml run --rm app-biblioteca python manage.py collectstatic --noinput
 
+
       - name: Reiniciar contenedores
         run: |
           cd /var/www/apps/biblioteca-uts
-          docker-compose -f docker-compose-prod.yml restart
+          docker-compose -f docker-compose-prod.yml down
+          sleep 15
+          docker-compose -f docker-compose-prod.yml up -d
