@@ -27,7 +27,7 @@ jobs:
       - name: Construir imagen Docker
         run: |
           cd /var/www/apps/biblioteca-uts
-          docker-compose -f docker-compose-prod.yml build --no-cache
+          docker-compose -f docker-compose-prod.yml build
 
       - name: Eliminar imágenes sin etiqueta (<none>)
         run: docker image prune -f
