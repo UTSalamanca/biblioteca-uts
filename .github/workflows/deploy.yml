@@ -18,18 +18,30 @@ jobs:
           cd /var/www/apps/biblioteca-uts
           git pull origin main --rebase
 
-      - name: Ejecutar migraciones y collectstatic
-        run: |
-          cd /var/www/apps/biblioteca-uts
-          docker-compose -f docker-compose-prod.yml run --rm app-biblioteca bash -c "rm -rf /code/staticfiles/*"
-          docker-compose -f docker-compose-prod.yml run --rm app-biblioteca python manage.py makemigrations
-          docker-compose -f docker-compose-prod.yml run --rm app-biblioteca python manage.py migrate --database=default
-          docker-compose -f docker-compose-prod.yml run --rm app-biblioteca python manage.py collectstatic --noinput
-
-
-      - name: Reiniciar contenedores
+      - name: Detener contenedores en ejecución
         run: |
           cd /var/www/apps/biblioteca-uts
           docker-compose -f docker-compose-prod.yml down
           sleep 15
+      
+      - name: Construir imagen Docker
+        run: |
+          cd /var/www/apps/biblioteca-uts
+          docker-compose -f docker-compose-prod.yml build --no-cache
+
+      - name: Eliminar imágenes sin etiqueta (<none>)
+        run: docker image prune -f
+
+      - name: Ejecutar migraciones y collectstatic
+        run: |
+          cd /var/www/apps/biblioteca-uts
+          docker-compose -f docker-compose-prod.yml run --rm app-biblioteca bash -c "\
+            rm -rf /code/staticfiles/* && \
+            python manage.py makemigrations && \
+            python manage.py migrate --database=default && \
+            python manage.py collectstatic --noinput"
+
+      - name: Reiniciar contenedores
+        run: |
+          cd /var/www/apps/biblioteca-uts
           docker-compose -f docker-compose-prod.yml up -d

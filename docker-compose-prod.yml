@@ -1,12 +1,15 @@
+# docker-compose-prod.yml
 services:
   app-biblioteca:
     build:
       context: .
       dockerfile: DockerfileProd
+      args:
+        UID: 1000
+        GID: 1000
     image: biblioteca:v1.0
     container_name: biblioteca
     restart: always
-    command: supervisord -c /etc/supervisor/supervisord.conf
     expose:
       - 8004
     volumes:
