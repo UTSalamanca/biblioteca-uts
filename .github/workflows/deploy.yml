@@ -3,25 +3,36 @@ name: Despliegue simple a producción
 on:
   push:
     branches:
-      - main  # Cambia si usas otra rama
+      - main
 
 jobs:
   deploy:
     runs-on: self-hosted
 
     steps:
-      - name: Navegar al directorio del proyecto
-        run: cd /var/www/apps/biblioteca-uts
-
       - name: Actualizar código desde GitHub
         run: |
           cd /var/www/apps/biblioteca-uts
           git pull origin main --rebase
 
-      - name: Levantar contenedores (sin rebuild)
+      - name: Reiniciar contenedores
         run: |
           cd /var/www/apps/biblioteca-uts
-          docker-compose -f docker-compose-prod.yml up -d
+          docker-compose -f docker-compose-prod.yml restart
+
+      - name: Esperar a que el contenedor esté listo
+        run: |
+          cd /var/www/apps/biblioteca-uts
+          echo "Esperando que 'app-biblioteca' esté en ejecución..."
+          for i in {1..10}; do
+            status=$(docker inspect -f '{{.State.Running}}' biblioteca)
+            if [ "$status" == "true" ]; then
+              echo "Contenedor en ejecución."
+              break
+            fi
+            echo "Aún no está listo... esperando 3 segundos"
+            sleep 3
+          done
 
       - name: Ejecutar migraciones y collectstatic
         run: |
