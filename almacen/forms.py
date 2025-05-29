@@ -11,7 +11,7 @@ class registro_form(forms.ModelForm):
     colocacion = forms.CharField(label='Colocación', required=True, max_length=100, widget=forms.TextInput (attrs={'class':'form-control','placeholder':'Ingrese la colocacion'}))
     edicion = forms.CharField(label='Edición', max_length=100, widget=forms.TextInput (attrs={'class':'form-control','placeholder':'Ingrese la edición'}))
     anio = forms.IntegerField(label='Año', widget=forms.NumberInput (attrs={'class':'form-control','placeholder':'Ingrese el año de edición'}))
-    adqui = forms.CharField(label='Tipo de adquisición', max_length=100, widget=forms.TextInput (attrs={'class':'form-control','placeholder':'indique el tipo de adquisición'}))
+    adqui = forms.CharField(label='Tipo de adquisición', max_length=100, required=False, widget=forms.TextInput (attrs={'class':'form-control','placeholder':'indique el tipo de adquisición'}))
     formato = forms.ChoiceField(label='Formato', choices=acervo_model.Format.choices, required=True, widget=forms.Select (attrs={'class':'form-select'}))
     estado = forms.ChoiceField(label='Estado', choices=acervo_model.State.choices, required=True, widget=forms.Select (attrs={'class':'form-select','placeholder':'Indique el estado del libro'}))
     class Meta:
