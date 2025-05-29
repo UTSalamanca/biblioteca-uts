@@ -19,7 +19,7 @@ def grupo_alumno(request):
         grupo = Grupo.objects.get(cve_grupo=cve_grupo)
         return { 'grupo_abrev': grupo.nombre }
     except:
-        return { 'grupo_abrev': '' }
+        return { 'grupo_abrev': 'NA' }
 
 def iniciales_nombre(request):
    user = request.user

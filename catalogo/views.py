@@ -318,6 +318,7 @@ def prestamo_registro(request):
             else:
                 # Si el formulario no es válido, vuelve a renderizar el formulario con errores
                 messages.add_message(request, messages.ERROR, '¡Por favor, corrija los errores del formulario!')
+                print(form.errors)
                 return redirect('catalogo:catalogo')
         else:
             # Si no es un POST, se asume que es un GET

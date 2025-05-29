@@ -5,7 +5,7 @@ from . import views
 app_name = 'catalogo'
 
 urlpatterns = [
-    path('catalago', login_required(views.catalogo), name='catalago'),
+    path('catalogo', login_required(views.catalogo), name='catalogo'),
     path('prestamo_registro/', login_required(views.prestamo_registro), name='prestamo_registro'),
     path('prestamos_View/', login_required(views.prestamos_View), name='prestamos_View'),
     path('cargar_portada/', login_required(views.cargar_portada), name='cargar_portada'),
