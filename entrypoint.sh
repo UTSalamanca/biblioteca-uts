@@ -2,14 +2,10 @@
 
 # entrypoint.sh
 
-# Crear directorio de logs si no existe
+# Crear directorios si no existen
 mkdir -p /code/logs
-mkdir -p /var/log/supervisor
 
-# Asegurar permisos correctos
-chmod -R 777 /code/logs
-chmod -R 777 /var/log/supervisor
+chmod -R 755 /code/logs
 
 # Ejecutar supervisord
 exec supervisord -c /etc/supervisor/supervisord.conf
-
