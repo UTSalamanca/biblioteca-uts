@@ -211,6 +211,7 @@ def temporary_file_base_64(base_64_input):
     try:
         with os.fdopen(file_temp, 'wb') as tmp:
             tmp.write(decoded_bytes)
+        os.chmod(path_temp, 0o644)  # Permisos de lectura y escritura para el propietario, lectura para otros
     except Exception as e:
         os.remove(path_temp)
         raise e
