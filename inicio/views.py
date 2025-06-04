@@ -5,10 +5,10 @@ from sito.models import Persona, Usuario, Carrera
 from static.helpers import *
 from .report_xlsx import generate_report
 from catalogo.models import model_catalogo
-from datetime import datetime
+from datetime import datetime, timedelta
 import calendar
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Sum
 
 # Create your views here.
 def index_inicio(request):
@@ -23,82 +23,35 @@ def index_inicio(request):
     # Se asigna el código para el focus en el sidebar
     side_code = 100
     if request.user.groups.filter(name='Biblioteca').exists():
-        # Se obtienen todos los datos del acervo
-        datos = acervo_model.objects.all()
-        # Se realiza el conteo de todos los libros
-        totals = cont_books(datos, 't')
-        # Se realiza el conteo de los prestamos de libros
-        total_prest = cont_books(datos, 'p')
-        # Obtener el total por estados
-        total_state = get_states(datos)
-        # Se realiza el recopilado del tipo de adquisición
-        value_adqui = get_adqui(datos)
-        # ==> Registro de vista
-        # Acciones para busqueda
-        busqueda = request.GET.get("buscar")
-        # Obtiene la información del select para filtrar por cantidad
-        m_tab = request.GET.get("m_tab")
-        # Obtiene la información del select para filtar por periodo
-        periodo_opt = request.GET.get("periodo_opt")
-        # Si llega indicación 1 => Este mes o 2 => Mes anterior
-        if periodo_opt and periodo_opt != "all":
-            # Obtiene los periodos
-            periodo = get_periodo(periodo_opt)
-            all_info = register_view.objects.filter(
-                fecha_consulta__range=[periodo['fech_ini'], periodo['fech_fin']],
-            )
-        else:
-            all_info = register_view.objects.all()
-        # Si viene una busquea
-        if busqueda:
-            all_info = all_info.filter(
-                Q(matricula__icontains = busqueda) |
-                Q(consultas__icontains = busqueda) |
-                Q(fecha_consulta__icontains = busqueda) 
-
-            ).distinct()
         
-        # Ordenamiento de datos
-        all_info = all_info.order_by('-fecha_consulta')
-        # Formatea la información para presentarta en tabla
-        views = ctrl_view_report(all_info)
-        # Acciones para el paginado
-        show_elem = int(m_tab) if m_tab else 10
-        paginator = Paginator(views, show_elem)
-        page = request.GET.get('page') or 1
-        ctrl_view = paginator.get_page(page)
-        pagina_actual = int(page)
-        total_paginas = ctrl_view.paginator.num_pages
-        # Definir cuántas páginas mostrar a la vez
-        num_mostrar = 5
-        mitad = num_mostrar // 2
-        # Rango dinámico de páginas a mostrar
-        inicio = max(pagina_actual - mitad, 1)
-        fin = min(pagina_actual + mitad, total_paginas) +1
-        paginas = range(inicio, fin)
-        # ==> fin
-        data = {
-            "total_book": totals['total_book'],
-            "book_movimiento": total_prest['book_movimiento'],
-            "book_prestados_t": total_prest['book_prestados_t'],
-            "states": total_state['states'][0],
-            "total_state": total_state['total_state'],
+        total_books_cant = acervo_model.objects.all().aggregate(Sum('cant'))['cant__sum']
+        # Get total borrowed books in the current month
+        now = datetime.now()
+        year = now.year
+        month = now.month
+        first_day = datetime(year, month, 1)
+        if month == 12:
+            last_day = datetime(year, month, 31)
+        else:
+            last_day = datetime(year, month + 1, 1) - timedelta(days=1)
+        total_borrowed_books = model_catalogo.objects.filter(
+            fechaP__gte=first_day, fechaP__lte=last_day
+        ).aggregate(Sum('cantidad_i'))['cantidad_i__sum']
+        print(total_books_cant, total_borrowed_books)
+
+        context = {
             "side_code": side_code,
-            "cant_libros":totals['format_libro'],
-            "cant_discos": totals['format_disco'],
-            "cant_revistas": totals['format_revista'],
-            "name_cole": value_adqui['name_cole'],
-            "value_adqui": value_adqui['value_adqui'],
-            "ctrl_view": ctrl_view,
-            "pagina_actual": pagina_actual,
-            "paginas": paginas
+            "total_books_cant": total_books_cant,
+            "total_borrowed_books": total_borrowed_books
         }
-        return render(request, 'inicio/index_inicio.html', { "data": data })
+
+        
+        return render(request, 'inicio/index_inicio.html', context)
     else:
-        data = {
+        context = {
             "side_code": side_code
         }
-        return render(request, 'inicio/index_general.html', { "data": data })
+        return render(request, 'inicio/index_general.html', context)
 
 def cont_books(datos, type):
     """Contreo de ejemplares

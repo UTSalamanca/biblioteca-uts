@@ -8,19 +8,6 @@ def persona(request):
    else:
         return {'persona': ''}
 
-def grupo_alumno(request):
-    user = request.user
-    # Obtiene el listado de cve_grupo del alumno
-    try:
-        alumno_grupo = AlumnoGrupo.objects.filter(matricula=user.login).values_list('cve_grupo', flat=True)
-        # Selecciona el ultimo en el que se ha registrado
-        cve_grupo = alumno_grupo[len(alumno_grupo) - 1]
-        # Realiza la busqueda del grupo con el cve_grupo
-        grupo = Grupo.objects.get(cve_grupo=cve_grupo)
-        return { 'grupo_abrev': grupo.nombre }
-    except:
-        return { 'grupo_abrev': 'NA' }
-
 def iniciales_nombre(request):
    user = request.user
    iniciales = ''
@@ -59,10 +46,23 @@ def group_permission(request, query = False):
         # Si el usuario no esta autenticado, se retorna una variable vacía
         return {"grupo": ""}
 
+def grupo_alumno(request):
+    user = request.user
+    if user.is_authenticated and user.groups.filter(name='Alumno').exists():
+        try:
+            alumno_grupo = AlumnoGrupo.objects.filter(matricula=user.login).values_list('cve_grupo', flat=True)
+            if alumno_grupo:
+                cve_grupo = alumno_grupo[len(alumno_grupo) - 1]
+                grupo = Grupo.objects.get(cve_grupo=cve_grupo)
+                return {'grupo_abrev': grupo.nombre}
+        except:
+            pass
+    return {'grupo_abrev': 'NA'}
+
 def get_alumnos_clase(request):
     user = request.user
     r = []
-    if user.is_authenticated:
+    if user.is_authenticated and user.groups.filter(name='Alumno').exists():
         alumnos = AlumnoClase.objects.filter(matricula=user.login).values_list('cve_docente', flat=True)
         for al in alumnos:
             if al not in r:

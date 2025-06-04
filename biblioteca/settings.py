@@ -272,3 +272,13 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
+
+if DEBUG:
+    INSTALLED_APPS += ['debug_toolbar']
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+    IINTERNAL_IPS = [
+        "127.0.0.1",
+    ]
+    DEBUG_TOOLBAR_CONFIG = {
+        "SHOW_TOOLBAR_CALLBACK": lambda request: True,  # Muestra siempre la barra
+    }
