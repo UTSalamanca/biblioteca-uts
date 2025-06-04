@@ -1,18 +1,17 @@
 from django.shortcuts import render, redirect
 from .models import model_estadias, register_view
 from .forms import estadias_form
-from django.http import FileResponse, HttpResponseServerError
 from django.conf import settings
 from static.helpers import *
 from django.contrib import messages
 from sito.models import Alumno, AlumnoGrupo, Grupo, Carrera, Usuario, Persona
 from static.context_processors import group_permission
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, FileResponse, HttpResponseServerError
 import base64, os, tempfile
 from django.utils.timezone import now
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import JsonResponse
+from django.template.loader import render_to_string
 
 def add_group_name_to_contex(view_class):
     original_dispatch = view_class.dispatch
@@ -41,6 +40,70 @@ def get_fullname_grupo(request):
         "name": name
     }
 
+def get_paginas_avanzadas(pagina_actual, total_paginas, max_paginas=5):
+    """
+    Retorna una lista con números de página y '...' si es necesario.
+    Ejemplo: [1, '...', 4, 5, 6, '...', 10]
+    """
+    if total_paginas <= max_paginas + 2:
+        return list(range(1, total_paginas + 1))
+
+    paginas = []
+    mitad = max_paginas // 2
+    inicio = max(pagina_actual - mitad, 1)
+    fin = min(pagina_actual + mitad, total_paginas)
+
+    if inicio > 2:
+        paginas.extend([1, '...'])
+    else:
+        paginas.extend(range(1, inicio))
+
+    paginas.extend(range(inicio, fin + 1))
+
+    if fin < total_paginas - 1:
+        paginas.extend(['...', total_paginas])
+    elif fin < total_paginas:
+        paginas.append(total_paginas)
+
+    return paginas
+
+def partial_tabla_proyectos(request):
+    busqueda = request.GET.get("buscar")
+    m_tab = request.GET.get("m_tab")
+    show_elem = int(m_tab) if m_tab else 10
+
+    filtros = Q()
+    if busqueda:
+        filtros |= Q(proyecto__icontains=busqueda)
+        filtros |= Q(matricula__icontains=busqueda)
+        filtros |= Q(alumno__icontains=busqueda)
+        filtros |= Q(asesor_academico__icontains=busqueda)
+        filtros |= Q(generacion__icontains=busqueda)
+        filtros |= Q(empresa__icontains=busqueda)
+        filtros |= Q(asesor_orga__icontains=busqueda)
+        filtros |= Q(carrera__icontains=busqueda)
+
+    all_reporte = model_estadias.objects.filter(filtros).order_by("proyecto") if busqueda else model_estadias.objects.all().order_by("proyecto")
+
+    paginator = Paginator(all_reporte, show_elem)
+    page = request.GET.get('page') or 1
+    try:
+        reporte = paginator.get_page(page)
+    except:
+        reporte = paginator.get_page(1)
+
+    paginas = get_paginas_avanzadas(reporte.number, paginator.num_pages)
+
+    html = render_to_string("estadias/tabla_proyectos_partial.html", {
+        "reporte": reporte,
+        "paginas": paginas,
+        "pagina_actual": reporte.number,
+        "total_paginas": paginator.num_pages,
+    }, request=request)
+
+    return HttpResponse(html)
+
+
 # Index principal
 def index_proyectos(request):
     """Devulve al index la informacion de todos los reportes registrados
@@ -54,46 +117,9 @@ def index_proyectos(request):
     form = estadias_form()
     # Código para control de pestañas en sidebar
     side_code = 300
-    # Acciones para busqueda
-    busqueda = request.GET.get("buscar")
-    # Obtiene la información del select para filtrar
-    m_tab = request.GET.get("m_tab")
-    if busqueda:
-        all_reporte = model_estadias.objects.filter(
-            Q(proyecto__icontains = busqueda) |
-            Q(matricula__icontains = busqueda) |
-            Q(alumno__icontains = busqueda) |
-            Q(asesor_academico__icontains = busqueda) |
-            Q(generacion__icontains = busqueda) |
-            Q(empresa__icontains = busqueda) |
-            Q(asesor_orga__icontains = busqueda) |
-            Q(carrera__icontains = busqueda)
-        ).distinct()
-    else:
-        all_reporte = model_estadias.objects.all()
-    # Ordenado de la información
-    all_reporte = all_reporte.order_by('proyecto')
-    # Acciones para el paginado
-    show_elem = int(m_tab) if m_tab else 10
-    paginator = Paginator(all_reporte, show_elem)
-    page = request.GET.get('page') or 1
-    reporte = paginator.get_page(page)
-    pagina_actual = int(page)
+    
 
-    total_paginas = reporte.paginator.num_pages
-    # Definir cuántas páginas mostrar a la vez
-    num_mostrar = 5
-    mitad = num_mostrar // 2
-    # Rango dinámico de páginas a mostrar
-    inicio = max(pagina_actual - mitad, 1)
-    fin = min(pagina_actual + mitad, total_paginas) +1
-    paginas = range(inicio, fin)
-
-    return render(request,'estadias/index_proyectos.html',{"reporte":reporte, 
-                                                  "paginas": paginas, 
-                                                  "pagina_actual":pagina_actual, 
-                                                  "form":form, 
-                                                  "side_code":side_code})
+    return render(request,'estadias/index_proyectos.html',{ "form":form, "side_code":side_code })
 
 @groups_required('32 Tutoreo - Tutor', 'Biblioteca')
 def estadias_registro(request):

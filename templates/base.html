@@ -1,4 +1,5 @@
 {% load static %}
+{% load django_htmx %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,6 +25,7 @@
     <!--link rel="stylesheet" href="{% static 'css/preloader.css' %}"-->
     <!-- Css propios -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% htmx_script %}
     {% block css %}{% endblock%}
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf_viewer.min.css"

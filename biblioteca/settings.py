@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'session_security',
     'import_export',
+    "django_htmx",
 
     # Mis APPS
     'almacen.apps.AlmacenConfig',
@@ -96,6 +97,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 CSRF_TRUSTED_ORIGINS = [

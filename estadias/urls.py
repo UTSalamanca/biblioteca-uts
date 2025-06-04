@@ -11,4 +11,5 @@ urlpatterns = [
     path('view_report/<report_rute>', login_required(views.view_report), name='view_report'),
     path('view_report/<report_rute>', login_required(views.servir_pdf), name='servir_pdf'),
     path('proyectos/',login_required(views.index_proyectos), name='proyectos'),
+    path('tabla-proyectos/', views.partial_tabla_proyectos, name='partial_tabla_proyectos'),  # <- nueva vista HTMX
 ]

@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Proyectos de estadías{% endblock %}
-{% block content %}
 {% block css %}
 <link rel="stylesheet" href="{% static 'css/estadias.css' %}">
 {% endblock %}
+{% block content %}
 
 <!-- Content Header (Page header) -->
 <div id="proyectos">
@@ -39,71 +39,49 @@
             </div>
             {% endif %}
         </div>
-        <div class="table-responsive bg-white p-2">
-            <div class="row pb-2">
-                <div class="col-xl-6 d-flex">
-                    <span class="align-content-center mr-1">Mostrar </span>
-                    <form method="GET" id="form_tab_select">
-                        <select name="m_tab" id="select_tabs" class="form-select">
-                            <option value="10" {% if request.GET.m_tab == "10" %}selected{% endif %}>10</option>
-                            <option value="20" {% if request.GET.m_tab == "20" %}selected{% endif %}>20</option>
-                            <option value="50" {% if request.GET.m_tab == "50" %}selected{% endif %}>50</option>
-                            <option value="100" {% if request.GET.m_tab == "100" %}selected{% endif %}>100</option>
-                        </select>
-                    </form>
+        <div class="bg-white p-2">
+           <!-- Selector y búsqueda -->
+            <!-- Selector y búsqueda -->
+             <div class="row my-3">
+                <div class="col-sm-6 col-xl-8 d-flex mb-2 mb-sm-0">
+                    <span class="align-content-center mr-1">Mostrar</span>
+                    <select name="m_tab"
+                        id="m_tab"
+                        class="form-select"
+                        style="width: auto; min-width: 70px;"
+                        hx-get="{% url 'estadias:partial_tabla_proyectos' %}"
+                        hx-target="#tabla-proyectos-container"
+                        hx-trigger="change"
+                        hx-swap="innerHTML">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
                 </div>
-                <div class="col-xl-6">
-                    <div class="search d-flex justify-content-end">
-                        <form method="GET">
-                            <div id="custom-search-input">
-                                <div class="input-group col-md-12">
-                                    <input type="search" class="form-control" placeholder="Buscar..." name="buscar" value="{{ request.GET.buscar }}">
-                                    <span class="input-group-list">
-                                        <i class="icon icon-search"></i>
-                                        <button type="submit" class="btn">Buscar</button>
-                                    </span>
-                                </div>
-                            </div>
-                        </form>
+                <div class="col-sm-6 col-xl-4">
+                    <div class="form-group">
+                        <input type="search"
+                            name="buscar"
+                            placeholder="Buscar..."
+                            class="form-control"
+                            hx-get="{% url 'estadias:partial_tabla_proyectos' %}"
+                            hx-target="#tabla-proyectos-container"
+                            hx-trigger="keyup changed delay:300ms"
+                            hx-swap="innerHTML">
                     </div>
                 </div>
+
+             </div>
+
+           <div class="table-responsive" id="tabla-proyectos-container"
+                hx-get="{% url 'estadias:partial_tabla_proyectos' %}"
+                hx-trigger="load"
+                hx-target="#tabla-proyectos-container"
+                hx-swap="innerHTML">
+                <!-- Aquí podría ir un spinner o "Cargando..." -->
             </div>
-            {% if reporte %}
-                <table id="ProyectosTable" class="table table-striped" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th class="text-center">Proyecto</th>
-                            <th class="text-center">Alumno</th>
-                            <th class="text-center">Asesor Académico</th>
-                            <th class="text-center">Generación</th>
-                            <th class="text-center">Asesor Organizacional</th>
-                            <th class="text-center">Empresa</th>
-                            <th class="text-center">Carrera</th>
-                            <th class="text-center">Reporte</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for p in reporte %}
-                        <tr data-report="{{ p.reporte }}">
-                            <td>{{p.proyecto}}</td>
-                            <td>{{p.alumno}}</td>
-                            <td>{{p.asesor_academico}}</td>
-                            <td>{{p.generacion}}</td>
-                            <td>{{p.asesor_orga}}</td>
-                            <td>{{p.empresa}}</td>
-                            <td>{{p.carrera}}</td>
-                            <td class="text-center">
-                                <a href="{% url 'estadias:view_report' p.reporte %}" onclick="actualizarEstadia(['{{ user }}','{{ p.reporte }}','{{ p.id }}'])" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    title="Ver reporte"><i class="fas fa-file-pdf" style="color: #cf2121;"></i></a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% include 'estadias/paginacion.html' %}
-            {% else %}
-                {% include 'sin_registros.html' %}
-            {% endif %}
+            
         </div>
     </div>
     <p id="response_sweetalert" data-resp="{{ response }}" style="display: none;"></p>

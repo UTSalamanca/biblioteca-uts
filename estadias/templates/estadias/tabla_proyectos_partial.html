@@ -1,0 +1,37 @@
+{% if reporte %}
+    <table id="ProyectosTable" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th class="text-center">Proyecto</th>
+                <th class="text-center">Alumno</th>
+                <th class="text-center">Asesor Académico</th>
+                <th class="text-center">Generación</th>
+                <th class="text-center">Asesor Organizacional</th>
+                <th class="text-center">Empresa</th>
+                <th class="text-center">Carrera</th>
+                <th class="text-center">Reporte</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in reporte %}
+            <tr>
+                <td>{{ p.proyecto }}</td>
+                <td>{{ p.alumno }}</td>
+                <td>{{ p.asesor_academico }}</td>
+                <td>{{ p.generacion }}</td>
+                <td>{{ p.asesor_orga }}</td>
+                <td>{{ p.empresa }}</td>
+                <td>{{ p.carrera }}</td>
+                <td class="text-center">
+                    <a href="{% url 'estadias:view_report' p.reporte %}">
+                        <i class="fas fa-file-pdf" style="color: #cf2121;"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include 'estadias/paginacion.html' %}
+{% else %}
+    {% include 'sin_registros.html' %}
+{% endif %}

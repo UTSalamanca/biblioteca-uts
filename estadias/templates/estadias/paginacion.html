@@ -1,27 +1,67 @@
-<div class="row mt-3" id="paginator">
-    <nav>
-        <ul class="pagination">
-            {% if reporte.has_previous %}
-                <li class="page-item">
-                    <a href="?page=1" class="page-link">Primera</a>
-                </li>
-                <li class="page-item">
-                    <a href="?page={{ reporte.previous_page_number }}" class="page-link">&laquo;</a>
-                </li>
-            {% endif %}
-            {% if reporte.has_next %}
-                {% for pagina in paginas %}
-                    <li class="page-item {% if pagina_actual == pagina %} active {% endif %}">
-                        <a href="?page={{ pagina }}" class="page-link">{{ pagina }}</a>
-                    </li>
-                {% endfor %}
-                <li class="page-item">
-                    <a href="?page={{ reporte.next_page_number }}" class="page-link">&raquo;</a>
-                </li>
-                <li class="page-item">
-                    <a href="?page={{ reporte.paginator.num_pages }}" class="page-link">Última</a>
-                </li>
-            {% endif %}
-        </ul>
-    </nav>
+{% if reporte.has_other_pages %}
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center flex-wrap">
+
+    {% if reporte.has_previous %}
+      <!-- Primera -->
+      <li class="page-item">
+        <a class="page-link"
+           hx-get="?page=1&buscar={{ request.GET.buscar }}&m_tab={{ request.GET.m_tab }}"
+           hx-target="#tabla-proyectos-container"
+           hx-swap="innerHTML"
+           hx-push-url="false">&laquo;&laquo;</a>
+      </li>
+
+      <!-- Anterior -->
+      <li class="page-item">
+        <a class="page-link"
+           hx-get="?page={{ reporte.previous_page_number }}&buscar={{ request.GET.buscar }}&m_tab={{ request.GET.m_tab }}"
+           hx-target="#tabla-proyectos-container"
+           hx-swap="innerHTML"
+           hx-push-url="false">&laquo;</a>
+      </li>
+    {% endif %}
+
+    {% for page in paginas %}
+      {% if page == '...' %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% elif page == pagina_actual %}
+        <li class="page-item active"><span class="page-link">{{ page }}</span></li>
+      {% else %}
+        <li class="page-item">
+          <a class="page-link"
+             hx-get="?page={{ page }}&buscar={{ request.GET.buscar }}&m_tab={{ request.GET.m_tab }}"
+             hx-target="#tabla-proyectos-container"
+             hx-swap="innerHTML"
+             hx-push-url="false">{{ page }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+
+    {% if reporte.has_next %}
+      <!-- Siguiente -->
+      <li class="page-item">
+        <a class="page-link"
+           hx-get="?page={{ reporte.next_page_number }}&buscar={{ request.GET.buscar }}&m_tab={{ request.GET.m_tab }}"
+           hx-target="#tabla-proyectos-container"
+           hx-swap="innerHTML"
+           hx-push-url="false">&raquo;</a>
+      </li>
+
+      <!-- Última -->
+      <li class="page-item">
+        <a class="page-link"
+           hx-get="?page={{ total_paginas }}&buscar={{ request.GET.buscar }}&m_tab={{ request.GET.m_tab }}"
+           hx-target="#tabla-proyectos-container"
+           hx-swap="innerHTML"
+           hx-push-url="false">&raquo;&raquo;</a>
+      </li>
+    {% endif %}
+
+  </ul>
+</nav>
+{% endif %}
+
+<div class="d-flex justify-content-center">
+  Mostrando {{ reporte.object_list|length }} de {{ reporte.paginator.count }} Resultados en la Página {{ reporte.number }} de {{ reporte.paginator.num_pages }}
 </div>
