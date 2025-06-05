@@ -161,3 +161,5 @@ cython_debug/
 
 # Add folder staticfiles to ignore
 staticfiles/
+
+supervisord.pid
