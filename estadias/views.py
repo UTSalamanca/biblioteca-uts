@@ -12,6 +12,7 @@ from django.utils.timezone import now
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.template.loader import render_to_string
+from core.utils import get_paginas_avanzadas
 
 def add_group_name_to_contex(view_class):
     original_dispatch = view_class.dispatch
@@ -40,33 +41,6 @@ def get_fullname_grupo(request):
         "name": name
     }
 
-def get_paginas_avanzadas(pagina_actual, total_paginas, max_paginas=5):
-    """
-    Retorna una lista con números de página y '...' si es necesario.
-    Ejemplo: [1, '...', 4, 5, 6, '...', 10]
-    """
-    if total_paginas <= max_paginas + 2:
-        return list(range(1, total_paginas + 1))
-
-    paginas = []
-    mitad = max_paginas // 2
-    inicio = max(pagina_actual - mitad, 1)
-    fin = min(pagina_actual + mitad, total_paginas)
-
-    if inicio > 2:
-        paginas.extend([1, '...'])
-    else:
-        paginas.extend(range(1, inicio))
-
-    paginas.extend(range(inicio, fin + 1))
-
-    if fin < total_paginas - 1:
-        paginas.extend(['...', total_paginas])
-    elif fin < total_paginas:
-        paginas.append(total_paginas)
-
-    return paginas
-
 def partial_tabla_proyectos(request):
     busqueda = request.GET.get("buscar")
     m_tab = request.GET.get("m_tab")
@@ -83,8 +57,11 @@ def partial_tabla_proyectos(request):
         filtros |= Q(asesor_orga__icontains=busqueda)
         filtros |= Q(carrera__icontains=busqueda)
 
-    all_reporte = model_estadias.objects.filter(filtros).order_by("proyecto") if busqueda else model_estadias.objects.all().order_by("proyecto")
-
+    if busqueda:
+        all_reporte = model_estadias.objects.defer('base64').filter(filtros).order_by('-fecha_registro')
+    else:
+        all_reporte = model_estadias.objects.defer('base64').all().order_by('-fecha_registro')
+    
     paginator = Paginator(all_reporte, show_elem)
     page = request.GET.get('page') or 1
     try:
@@ -118,7 +95,6 @@ def index_proyectos(request):
     # Código para control de pestañas en sidebar
     side_code = 300
     
-
     return render(request,'estadias/index_proyectos.html',{ "form":form, "side_code":side_code })
 
 @groups_required('32 Tutoreo - Tutor', 'Biblioteca')
